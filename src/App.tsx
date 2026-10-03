@@ -10,6 +10,7 @@ import { ProjectMetadata, Question, InterviewedStudent, Interviewer, ViewTab } f
 import { Header } from './components/Header';
 import { Navigation } from './components/Navigation';
 import { SummaryView } from './components/SummaryView';
+import { AnalyticsView } from './components/AnalyticsView';
 import { CareersView } from './components/CareersView';
 import { QuestionDetailView } from './components/QuestionDetailView';
 import { StudentProfileView } from './components/StudentProfileView';
@@ -192,6 +193,20 @@ export default function App() {
             insights={analyticalInsights}
             onSelectStudent={handleSelectStudent}
             onSelectQuestion={handleSelectQuestion}
+            onGoToAnalytics={() => setActiveTab('analytics')}
+            onGoToCareers={() => setActiveTab('careers')}
+          />
+        )}
+
+        {activeTab === 'analytics' && (
+          <AnalyticsView
+            students={students}
+            questions={questions}
+            onSelectCareer={(career) => {
+              setSelectedCareer(career);
+              setActiveTab('careers');
+            }}
+            onSelectStudent={handleSelectStudent}
           />
         )}
 

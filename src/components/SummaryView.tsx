@@ -6,11 +6,13 @@ import {
   CheckCircle2, 
   Globe2, 
   Quote, 
-  ArrowRight,
-  Sparkles,
-  BookOpen,
-  Dog,
-  Award
+  ArrowRight, 
+  Sparkles, 
+  BookOpen, 
+  Dog, 
+  Award,
+  BarChart3,
+  PieChart
 } from 'lucide-react';
 
 interface SummaryViewProps {
@@ -20,6 +22,8 @@ interface SummaryViewProps {
   insights: Array<{ title: string; description: string; metric: string; tag: string }>;
   onSelectStudent: (studentId: string) => void;
   onSelectQuestion: (questionId: number) => void;
+  onGoToAnalytics?: () => void;
+  onGoToCareers?: () => void;
 }
 
 export const SummaryView: React.FC<SummaryViewProps> = ({
@@ -28,24 +32,34 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
   students,
   insights,
   onSelectStudent,
-  onSelectQuestion
+  onSelectQuestion,
+  onGoToAnalytics,
+  onGoToCareers
 }) => {
   const totalAnswers = questions.length * students.length;
 
   // Calculate English level distribution
   const levelCounts: Record<string, number> = {
-    'A1': 0,
-    'A2': 0,
+    'B2': 0,
     'B1': 0,
-    'B2': 0
+    'A2': 0,
+    'A1': 0
   };
 
   students.forEach((s) => {
-    if (s.perceivedEnglishLevel?.startsWith('A1')) levelCounts['A1']++;
-    else if (s.perceivedEnglishLevel?.startsWith('A2')) levelCounts['A2']++;
+    if (s.perceivedEnglishLevel?.startsWith('B2')) levelCounts['B2']++;
     else if (s.perceivedEnglishLevel?.startsWith('B1')) levelCounts['B1']++;
-    else if (s.perceivedEnglishLevel?.startsWith('B2')) levelCounts['B2']++;
+    else if (s.perceivedEnglishLevel?.startsWith('A2')) levelCounts['A2']++;
+    else if (s.perceivedEnglishLevel?.startsWith('A1')) levelCounts['A1']++;
   });
+
+  const b2Pct = Math.round((levelCounts['B2'] / students.length) * 100) || 0;
+  const b1Pct = Math.round((levelCounts['B1'] / students.length) * 100) || 0;
+  const a2Pct = Math.round((levelCounts['A2'] / students.length) * 100) || 0;
+  const a1Pct = Math.round((levelCounts['A1'] / students.length) * 100) || 0;
+
+  // Distinct majors
+  const uniqueCareers = Array.from(new Set(students.map((s) => s.career)));
 
   return (
     <div className="space-y-8 pb-12">
@@ -74,25 +88,57 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
           {/* Quick Technical Sheet */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-700/80">
             <div>
-              <span className="block text-2xl font-bold text-amber-400">{students.length}</span>
+              <span className="block text-2xl font-bold text-amber-400">{uniqueCareers.length}</span>
               <span className="text-xs text-slate-300">University Majors</span>
             </div>
             <div>
-              <span className="block text-2xl font-bold text-amber-400">{questions.length}</span>
-              <span className="text-xs text-slate-300">Structured Questions</span>
+              <span className="block text-2xl font-bold text-amber-400">{students.length}</span>
+              <span className="text-xs text-slate-300">Interviewed Students</span>
             </div>
             <div>
               <span className="block text-2xl font-bold text-amber-400">{totalAnswers}</span>
               <span className="text-xs text-slate-300">Recorded Answers</span>
             </div>
             <div>
-              <span className="block text-2xl font-bold text-emerald-400">
-                {Math.round(((levelCounts['B1'] + levelCounts['B2']) / students.length) * 100)}%
-              </span>
+              <span className="block text-2xl font-bold text-emerald-400">{b1Pct + b2Pct}%</span>
               <span className="text-xs text-slate-300">Intermediate CEFR (B1/B2)</span>
             </div>
           </div>
         </div>
+      </section>
+
+      {/* Interactive Infographics Callout Banner */}
+      <section className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-start gap-3">
+          <div className="w-10 h-10 rounded-xl bg-slate-900 text-amber-400 flex items-center justify-center shrink-0 shadow-xs">
+            <PieChart className="w-5 h-5" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold uppercase tracking-wider text-amber-800">
+                Visual Analytics Hub
+              </span>
+              <span className="text-slate-400">·</span>
+              <span className="text-xs text-slate-600 font-medium">Infographic charts available</span>
+            </div>
+            <h4 className="text-sm font-bold text-slate-900 mt-0.5">
+              Explore Dynamic Charts & Infographics
+            </h4>
+            <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+              Interactive SVG Donut charts, stacked major comparisons, global exchange destinations, and teaching preference funnels.
+            </p>
+          </div>
+        </div>
+
+        {onGoToAnalytics && (
+          <button
+            onClick={onGoToAnalytics}
+            className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-xs transition-colors shrink-0"
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span>Open Infographics Dashboard</span>
+          </button>
+        )}
       </section>
 
       {/* Two-Column Context: Methodological Sheet & CEFR Level Distribution */}
@@ -141,7 +187,7 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
           </div>
         </div>
 
-        {/* Interviewer-Assessed English Proficiency Level Distribution Card */}
+        {/* Visual Donut & CEFR Level Card */}
         <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-1">
@@ -157,45 +203,95 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
                 CEFR Scale
               </span>
             </div>
-            <p className="text-xs text-slate-500 mb-4">
-              Pedagogical qualitative appraisal made by the student interviewers during fieldwork
+            <p className="text-xs text-slate-500 mb-3">
+              Qualitative appraisal across the {students.length} interviewed students
             </p>
 
-            <div className="space-y-3">
+            {/* Mini Donut Chart */}
+            <div className="flex items-center justify-center my-3 relative">
+              <svg className="w-28 h-28 transform -rotate-90" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="38" fill="transparent" stroke="#f1f5f9" strokeWidth="12" />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="38"
+                  fill="transparent"
+                  stroke="#059669"
+                  strokeWidth="12"
+                  strokeDasharray={`${(b2Pct * 2.387).toFixed(1)} 238.7`}
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="38"
+                  fill="transparent"
+                  stroke="#2563eb"
+                  strokeWidth="12"
+                  strokeDasharray={`${(b1Pct * 2.387).toFixed(1)} 238.7`}
+                  strokeDashoffset={`${-(b2Pct * 2.387)}`}
+                />
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="38"
+                  fill="transparent"
+                  stroke="#d97706"
+                  strokeWidth="12"
+                  strokeDasharray={`${(a2Pct * 2.387).toFixed(1)} 238.7`}
+                  strokeDashoffset={`${-((b2Pct + b1Pct) * 2.387)}`}
+                />
+              </svg>
+              <div className="absolute text-center">
+                <span className="text-lg font-bold text-slate-900 block leading-tight">
+                  {b1Pct + b2Pct}%
+                </span>
+                <span className="text-[9px] uppercase font-semibold text-slate-500">
+                  B1 / B2
+                </span>
+              </div>
+            </div>
+
+            {/* Level Bars */}
+            <div className="space-y-2 pt-1">
               {[
-                { level: 'B2', label: 'Upper Intermediate', count: levelCounts['B2'], color: 'bg-emerald-600' },
-                { level: 'B1', label: 'Intermediate', count: levelCounts['B1'], color: 'bg-blue-600' },
-                { level: 'A2', label: 'Elementary', count: levelCounts['A2'], color: 'bg-amber-600' },
-                { level: 'A1', label: 'Beginner', count: levelCounts['A1'], color: 'bg-slate-400' }
-              ].map((item) => {
-                const percent = Math.round((item.count / students.length) * 100);
-                return (
-                  <div key={item.level} className="space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <span className="font-medium text-slate-800">
-                        {item.level} ({item.label})
-                      </span>
-                      <span className="text-slate-600 font-semibold">
-                        {item.count} std. ({percent}%)
-                      </span>
-                    </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2 overflow-hidden">
-                      <div
-                        className={`h-full rounded-full ${item.color} transition-all duration-500`}
-                        style={{ width: `${percent}%` }}
-                      />
-                    </div>
+                { level: 'B2', label: 'Upper Intermediate', count: levelCounts['B2'], pct: b2Pct, color: 'bg-emerald-600' },
+                { level: 'B1', label: 'Intermediate', count: levelCounts['B1'], pct: b1Pct, color: 'bg-blue-600' },
+                { level: 'A2', label: 'Elementary', count: levelCounts['A2'], pct: a2Pct, color: 'bg-amber-600' },
+                { level: 'A1', label: 'Beginner', count: levelCounts['A1'], pct: a1Pct, color: 'bg-slate-400' }
+              ].map((item) => (
+                <div key={item.level} className="space-y-0.5">
+                  <div className="flex justify-between text-[11px]">
+                    <span className="font-medium text-slate-800">
+                      {item.level} ({item.label})
+                    </span>
+                    <span className="text-slate-600 font-semibold">
+                      {item.count} std. ({item.pct}%)
+                    </span>
                   </div>
-                );
-              })}
+                  <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full ${item.color}`}
+                      style={{ width: `${item.pct}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>
-              {Math.round(((levelCounts['B1'] + levelCounts['B2']) / students.length) * 100)}% of students possess intermediate communicative grounding.
+          <div className="mt-4 pt-3 border-t border-slate-100 text-xs text-slate-500 flex items-center justify-between">
+            <span className="flex items-center gap-1">
+              <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+              Intermediate dominance
             </span>
+            {onGoToAnalytics && (
+              <button
+                onClick={onGoToAnalytics}
+                className="text-amber-700 hover:underline font-semibold"
+              >
+                Detailed chart →
+              </button>
+            )}
           </div>
         </div>
       </section>
@@ -238,7 +334,7 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
               Major Research Findings & Patterns
             </h3>
             <p className="text-xs text-slate-500">
-              Cross-cutting qualitative patterns identified across the {students.length} academic disciplines
+              Cross-cutting qualitative patterns identified across the {uniqueCareers.length} academic disciplines
             </p>
           </div>
         </div>
@@ -282,70 +378,76 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-              Participating Students & Majors ({students.length})
+              Participating Majors ({uniqueCareers.length} Programs)
             </h3>
             <p className="text-xs text-slate-500">
-              Click any major to explore their complete 11 answers and profile dossier
+              Explore individual cohorts of students (up to 8 students per career)
             </p>
           </div>
-          <span className="text-xs text-slate-500 font-medium">
-            {students.length} degree programs at UniAgustiniana Bogotá ({metadata.term})
-          </span>
+          {onGoToCareers && (
+            <button
+              onClick={onGoToCareers}
+              className="text-xs text-amber-700 hover:underline font-semibold flex items-center gap-1"
+            >
+              <span>View dedicated career tabs</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-          {students.map((student) => (
-            <button
-              key={student.id}
-              onClick={() => onSelectStudent(student.id)}
-              className="group text-left bg-white rounded-xl p-4 border border-slate-200 hover:border-slate-400 hover:shadow-sm transition-all flex flex-col justify-between"
-            >
-              <div>
-                <div className="flex items-center gap-3 mb-2.5">
-                  <div
-                    className={`w-9 h-9 rounded-lg ${student.avatarColor} text-white font-bold flex items-center justify-center text-xs shadow-xs shrink-0`}
-                  >
-                    {student.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
-                  </div>
-                  <div className="min-w-0">
-                    <h4 className="text-xs font-semibold text-slate-900 group-hover:text-amber-700 transition-colors truncate">
-                      {student.name}
-                    </h4>
-                    <p className="text-[11px] font-medium text-slate-600 truncate">
-                      {student.career.split(' (')[0]}
-                    </p>
-                  </div>
-                </div>
+          {uniqueCareers.map((career) => {
+            const careerStudents = students.filter((s) => s.career === career);
+            const firstStudent = careerStudents[0];
+            const shortName = career.split(' (')[0];
 
-                <div className="text-[11px] text-slate-500 space-y-1 mb-2.5">
-                  <div className="flex items-center justify-between">
-                    <span>Semester:</span>
-                    <span className="font-medium text-slate-700">{student.semester}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>Campus:</span>
-                    <span className="font-medium text-slate-700">{student.campus.replace(' Campus', '')}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span>English Level:</span>
-                    <span className="font-semibold text-slate-900 bg-slate-100 px-1.5 py-0.5 rounded text-[10px]">
-                      {student.perceivedEnglishLevel.split(' - ')[0]}
+            return (
+              <div
+                key={career}
+                className="bg-white rounded-xl p-4 border border-slate-200 hover:border-slate-300 transition-all flex flex-col justify-between shadow-xs"
+              >
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                      Major #{uniqueCareers.indexOf(career) + 1}
+                    </span>
+                    <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                      {careerStudents.length}/8 std.
                     </span>
                   </div>
+
+                  <h4 className="text-xs font-bold text-slate-900 mb-1 leading-snug">
+                    {shortName}
+                  </h4>
+                  <p className="text-[11px] text-slate-500 truncate mb-3">
+                    {firstStudent?.faculty || 'Faculty of UniAgustiniana'}
+                  </p>
+
+                  {/* Mini capacity bar */}
+                  <div className="w-full bg-slate-100 rounded-full h-1.5 mb-3 overflow-hidden">
+                    <div
+                      className="bg-amber-500 h-1.5 rounded-full"
+                      style={{ width: `${(careerStudents.length / 8) * 100}%` }}
+                    />
+                  </div>
                 </div>
 
-                {/* Highlight Quote */}
-                <div className="bg-slate-50 rounded-lg p-2 text-[11px] text-slate-600 italic border-l-2 border-amber-500 mb-2.5 line-clamp-3">
-                  "{student.highlightQuote}"
+                <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                  <span className="text-[11px] text-slate-400">
+                    {firstStudent?.campus.replace(' Campus', '')}
+                  </span>
+                  {onGoToCareers && (
+                    <button
+                      onClick={onGoToCareers}
+                      className="text-amber-700 font-semibold hover:underline text-xs"
+                    >
+                      Explore →
+                    </button>
+                  )}
                 </div>
               </div>
-
-              <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-amber-700 font-medium group-hover:translate-x-0.5 transition-transform">
-                <span>11 answers</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </div>
-            </button>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -357,7 +459,7 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
               The 11 Research Questions Applied
             </h3>
             <p className="text-xs text-slate-500">
-              Select any question to see how each of the {students.length} majors answered and contrast them
+              Select any question to see how each of the {uniqueCareers.length} majors answered and contrast them
             </p>
           </div>
         </div>

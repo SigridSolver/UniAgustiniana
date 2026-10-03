@@ -8,7 +8,8 @@ import {
   GraduationCap, 
   BookOpenCheck,
   Settings2,
-  Building
+  Building,
+  PieChart
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -32,6 +33,12 @@ export const Navigation: React.FC<NavigationProps> = ({
       label: 'Summary & Insights',
       icon: BarChart3,
       badge: 'Overview'
+    },
+    {
+      id: 'analytics' as ViewTab,
+      label: 'Infographics & Charts',
+      icon: PieChart,
+      badge: 'Visual Data'
     },
     {
       id: 'careers' as ViewTab,

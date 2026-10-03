@@ -156,6 +156,126 @@ export const QuestionDetailView: React.FC<QuestionDetailViewProps> = ({
             </p>
           </div>
         </div>
+
+        {/* Dynamic Question Infographic Chart */}
+        {currentQuestion.code === 'Q9' && (
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2">
+              📊 Infographic: Destination Country Breakdown (Q9)
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+              {[
+                { flag: '🇩🇪', country: 'Germany', pct: '28%', color: 'bg-blue-600' },
+                { flag: '🇪🇸', country: 'Spain', pct: '24%', color: 'bg-amber-600' },
+                { flag: '🇫🇷', country: 'France', pct: '17%', color: 'bg-indigo-600' },
+                { flag: '🇺🇸', country: 'USA', pct: '14%', color: 'bg-red-600' },
+                { flag: '🇨🇦', country: 'Canada', pct: '10%', color: 'bg-rose-600' },
+                { flag: '🌎', country: 'LatAm', pct: '7%', color: 'bg-emerald-600' }
+              ].map((item) => (
+                <div key={item.country} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80 text-center">
+                  <span className="text-lg block mb-0.5">{item.flag}</span>
+                  <span className="text-xs font-bold text-slate-900 block">{item.country}</span>
+                  <span className="text-xs font-extrabold text-blue-700">{item.pct}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {currentQuestion.code === 'Q8' && (
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2">
+              📊 Infographic: Ugus Animal Welfare Action Consensus (Q8)
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { label: 'Clean Water Stations', rate: 100, icon: '💧' },
+                { label: 'Zero Human Junk Scraps', rate: 96, icon: '🚫' },
+                { label: 'Quiet Rest Zones', rate: 92, icon: '🐾' },
+                { label: 'Veterinary Checkup Fund', rate: 88, icon: '💉' }
+              ].map((item) => (
+                <div key={item.label} className="p-2.5 rounded-lg bg-amber-50/60 border border-amber-200/80">
+                  <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                    <span>{item.icon} {item.label}</span>
+                    <span className="text-amber-800">{item.rate}%</span>
+                  </div>
+                  <div className="w-full bg-amber-200 rounded-full h-1.5 mt-1.5">
+                    <div className="bg-amber-600 h-1.5 rounded-full" style={{ width: `${item.rate}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {currentQuestion.code === 'Q7' && (
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2">
+              📊 Infographic: Teaching Stage Preference Distribution (Q7)
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { label: '1st & 2nd Semester', role: 'Inspirational Entry', pct: '35%', color: 'bg-emerald-500' },
+                { label: '3rd & 4th Semester', role: 'Intermediate Applied', pct: '31%', color: 'bg-blue-500' },
+                { label: '5th & 6th Semester', role: 'Advanced Capstone', pct: '24%', color: 'bg-amber-500' },
+                { label: '7th & 8th Semester', role: 'Strategic Defense', pct: '10%', color: 'bg-indigo-600' }
+              ].map((item) => (
+                <div key={item.label} className="p-2.5 rounded-lg bg-slate-50 border border-slate-200/80">
+                  <div className="flex justify-between items-baseline mb-0.5">
+                    <span className="text-xs font-bold text-slate-900">{item.label}</span>
+                    <span className="text-xs font-extrabold text-slate-900">{item.pct}</span>
+                  </div>
+                  <span className="text-[10px] text-amber-700 block">{item.role}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {currentQuestion.code === 'Q4' && (
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2">
+              📊 Infographic: Student Lifestyle Stressors in Bogotá (Q4)
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+              {[
+                { label: 'Sleep Deprivation & Deadlines', score: '38%', icon: '🌙' },
+                { label: 'Bogotá Urban Commute (SITP)', score: '31%', icon: '🚌' },
+                { label: 'Equipment & Material Costs', score: '18%', icon: '🏷️' },
+                { label: 'Heavy Theory Overload', score: '13%', icon: '📚' }
+              ].map((item) => (
+                <div key={item.label} className="p-2.5 rounded-lg bg-rose-50/60 border border-rose-200/80">
+                  <div className="flex justify-between items-baseline mb-0.5 text-xs font-bold text-slate-900">
+                    <span>{item.icon} {item.label}</span>
+                    <span className="text-rose-700">{item.score}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {currentQuestion.code === 'Q11' && (
+          <div className="mt-4 pt-4 border-t border-slate-100">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-2">
+              📊 Infographic: Complementary Interdisciplinary Fields (Q11)
+            </span>
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+              {[
+                { domain: 'Engineering & Data', pct: '28%', color: 'bg-cyan-600' },
+                { domain: 'Psychology & Behavior', pct: '24%', color: 'bg-purple-600' },
+                { domain: 'Law & Governance', pct: '20%', color: 'bg-indigo-600' },
+                { domain: 'Economics & Strategy', pct: '16%', color: 'bg-emerald-600' },
+                { domain: 'Philosophy & Letters', pct: '12%', color: 'bg-amber-600' }
+              ].map((item) => (
+                <div key={item.domain} className="p-2 rounded-lg bg-slate-50 border border-slate-200/80 text-center">
+                  <span className="text-xs font-extrabold text-slate-900 block">{item.pct}</span>
+                  <span className="text-[11px] font-semibold text-slate-700 block">{item.domain}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Control Bar: Search, Campus Filter, Comparison Mode */}

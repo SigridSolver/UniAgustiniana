@@ -48,4 +48,4 @@ export interface ProjectMetadata {
   sampleDescription: string;
 }
 
-export type ViewTab = 'summary' | 'careers' | 'questions' | 'students' | 'matrix' | 'team' | 'guide' | 'editor';
+export type ViewTab = 'summary' | 'analytics' | 'careers' | 'questions' | 'students' | 'matrix' | 'team' | 'guide' | 'editor';

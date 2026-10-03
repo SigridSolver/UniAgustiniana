@@ -177,43 +177,111 @@ export const CareersView: React.FC<CareersViewProps> = ({
           </div>
         </div>
 
-        {/* English Level & Quick Stats for this Career */}
+        {/* English Level & Quick Stats for this Career with Visual Infographics */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
-          <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200/80">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
-              Cohort Size:
-            </span>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-slate-900">{careerStudents.length}</span>
-              <span className="text-xs text-slate-500">interviewed students (max 8)</span>
+          {/* Cohort Quota Slot Meter */}
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Cohort Capacity Meter
+                </span>
+                <span className="text-xs font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                  {careerStudents.length} / 8 Max
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 my-2.5">
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((slot) => {
+                  const isFilled = slot <= careerStudents.length;
+                  return (
+                    <div
+                      key={slot}
+                      className={`flex-1 h-3 rounded-full transition-all ${
+                        isFilled
+                          ? 'bg-amber-500 shadow-2xs'
+                          : 'bg-slate-200 border border-slate-300/60'
+                      }`}
+                      title={isFilled ? `Interviewed Student #${slot}` : `Available Slot #${slot} (up to 8 max)`}
+                    />
+                  );
+                })}
+              </div>
             </div>
+            <p className="text-[11px] text-slate-500">
+              {8 - careerStudents.length > 0
+                ? `${8 - careerStudents.length} remaining slot(s) allowed for this career.`
+                : 'Maximum cohort quota reached (8/8).'}
+            </p>
           </div>
 
-          <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200/80">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
-              Interviewer-Assessed English Level:
-            </span>
-            <div className="flex items-center gap-2 text-xs font-medium text-slate-700">
-              {['B2', 'B1', 'A2', 'A1'].map((lvl) => {
+          {/* Level Distribution Stacked Infographic */}
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+            <div>
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                  Interviewer-Assessed Level
+                </span>
+                <span className="text-[11px] font-semibold text-slate-600">
+                  CEFR Scale
+                </span>
+              </div>
+              
+              {/* Mini Stacked Bar */}
+              <div className="h-3 w-full bg-slate-200 rounded-full flex overflow-hidden my-2.5 shadow-2xs">
+                {levelCounts['B2'] > 0 && (
+                  <div
+                    style={{ width: `${(levelCounts['B2'] / careerStudents.length) * 100}%` }}
+                    className="bg-emerald-600 h-full"
+                    title={`B2: ${levelCounts['B2']} (${Math.round((levelCounts['B2'] / careerStudents.length) * 100)}%)`}
+                  />
+                )}
+                {levelCounts['B1'] > 0 && (
+                  <div
+                    style={{ width: `${(levelCounts['B1'] / careerStudents.length) * 100}%` }}
+                    className="bg-blue-600 h-full"
+                    title={`B1: ${levelCounts['B1']} (${Math.round((levelCounts['B1'] / careerStudents.length) * 100)}%)`}
+                  />
+                )}
+                {levelCounts['A2'] > 0 && (
+                  <div
+                    style={{ width: `${(levelCounts['A2'] / careerStudents.length) * 100}%` }}
+                    className="bg-amber-600 h-full"
+                    title={`A2: ${levelCounts['A2']} (${Math.round((levelCounts['A2'] / careerStudents.length) * 100)}%)`}
+                  />
+                )}
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 text-[11px]">
+              {['B2', 'B1', 'A2'].map((lvl) => {
                 const count = levelCounts[lvl];
                 if (count === 0) return null;
+                const color = lvl === 'B2' ? 'text-emerald-700' : lvl === 'B1' ? 'text-blue-700' : 'text-amber-700';
                 return (
-                  <span key={lvl} className="bg-white px-2 py-0.5 rounded border border-slate-200 font-semibold text-slate-900">
-                    {lvl}: {count}
+                  <span key={lvl} className={`font-bold ${color}`}>
+                    {lvl}: {count} ({Math.round((count / careerStudents.length) * 100)}%)
                   </span>
                 );
               })}
             </div>
           </div>
 
-          <div className="bg-slate-50 p-3.5 rounded-lg border border-slate-200/80">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
-              Answers Recorded for this Major:
-            </span>
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-amber-600">{careerStudents.length * questions.length}</span>
-              <span className="text-xs text-slate-500">verbatim responses (11 questions)</span>
+          {/* Major Responses Metric */}
+          <div className="bg-slate-50 p-4 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block mb-1">
+                Data Volume for this Major
+              </span>
+              <div className="flex items-baseline gap-2 my-1">
+                <span className="text-2xl font-bold text-amber-600">
+                  {careerStudents.length * questions.length}
+                </span>
+                <span className="text-xs text-slate-500">recorded answers</span>
+              </div>
             </div>
+            <p className="text-[11px] text-slate-500">
+              11 comprehensive qualitative inquiries per student.
+            </p>
           </div>
         </div>
       </div>
