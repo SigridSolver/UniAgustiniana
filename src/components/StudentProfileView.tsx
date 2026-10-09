@@ -9,7 +9,9 @@ import {
   Pause, 
   Quote, 
   ArrowRight,
-  Sparkles
+  Sparkles,
+  Hash,
+  Award
 } from 'lucide-react';
 
 interface StudentProfileViewProps {
@@ -46,15 +48,23 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
     }
   };
 
+  if (!currentStudent) {
+    return (
+      <div className="bg-white rounded-xl p-8 border border-slate-200 text-center text-sm text-slate-500">
+        No student profile selected.
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 pb-12">
-      {/* 9 Students Horizontal Selector Bar */}
+      {/* Students Horizontal Selector Bar */}
       <div className="bg-white rounded-xl p-3 border border-slate-200 shadow-xs">
         <div className="flex items-center justify-between text-xs text-slate-500 mb-2 px-1">
-          <span className="font-semibold text-slate-700">Select Student / Academic Major:</span>
-          <span>{currentIndex + 1} of {students.length} majors</span>
+          <span className="font-semibold text-slate-700">Select Interviewed Student:</span>
+          <span>{currentIndex + 1} of {students.length} students</span>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-5 lg:grid-cols-10 gap-2">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
           {students.map((student) => {
             const isSelected = student.id === selectedStudentId;
             return (
@@ -66,26 +76,26 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 }}
                 className={`p-2.5 rounded-lg text-left transition-all flex flex-col justify-between border ${
                   isSelected
-                    ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                    ? 'bg-slate-900 text-white border-slate-900 shadow-xs ring-2 ring-amber-400'
                     : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/60'
                 }`}
               >
-                <div className="flex items-center gap-1.5 mb-1.5">
+                <div className="flex items-center justify-between gap-1.5 mb-1.5">
                   <div
                     className={`w-6 h-6 rounded-md ${student.avatarColor} text-white font-bold text-[10px] flex items-center justify-center shrink-0`}
                   >
                     {student.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
                   </div>
-                  <span className={`text-[10px] truncate font-semibold ${isSelected ? 'text-amber-400' : 'text-slate-600'}`}>
-                    {student.perceivedEnglishLevel.split(' - ')[0]}
+                  <span className={`text-[10px] font-mono font-bold ${isSelected ? 'text-amber-300' : 'text-slate-600'}`}>
+                    {student.studentCode}
                   </span>
                 </div>
                 <div className="min-w-0">
                   <span className={`block text-xs font-bold truncate leading-tight ${isSelected ? 'text-white' : 'text-slate-900'}`}>
-                    {student.career.split(' (')[0]}
+                    {student.name}
                   </span>
-                  <span className={`block text-[11px] truncate ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>
-                    {student.name.split(' ')[0]} {student.name.split(' ')[1]}
+                  <span className={`block text-[10px] truncate ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>
+                    {student.perceivedEnglishLevel.split(' - ')[0]} · {student.semester}
                   </span>
                 </div>
               </button>
@@ -106,7 +116,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 {currentStudent.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
               </div>
 
-              <div className="space-y-1">
+              <div className="space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2 text-xs text-amber-300">
                   <span className="font-semibold">{currentStudent.faculty}</span>
                   <span aria-hidden="true">·</span>
@@ -116,9 +126,15 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                   </span>
                 </div>
 
-                <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
-                  {currentStudent.name}
-                </h2>
+                <div className="flex flex-wrap items-center gap-3">
+                  <h2 className="text-xl sm:text-2xl font-bold tracking-tight text-white">
+                    {currentStudent.name}
+                  </h2>
+                  <div className="inline-flex items-center gap-1.5 bg-amber-400 text-slate-950 font-mono text-xs px-2.5 py-1 rounded-md font-bold shadow-xs">
+                    <Hash className="w-3.5 h-3.5" />
+                    <span>Student ID: {currentStudent.studentCode}</span>
+                  </div>
+                </div>
 
                 <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300">
                   <span className="text-amber-400 font-semibold text-sm">
@@ -188,7 +204,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 <span>
                   {isPlayingAudio ? 'Playing interview audio snippet...' : 'Interview audio track:'}
                 </span>
-                <span className="font-mono text-amber-400">{currentStudent.audioTime || '04:00 min'}</span>
+                <span className="font-mono text-amber-400">{currentStudent.audioTime || '03:45 min'}</span>
               </div>
             </div>
           </div>
@@ -207,7 +223,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
           </div>
         </div>
 
-        {/* 11 Responses Dossier */}
+        {/* Responses Dossier */}
         <div className="p-6 sm:p-8 space-y-6">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
@@ -215,11 +231,11 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                 Complete Fieldwork Interview Dossier ({questions.length} Questions)
               </h3>
               <p className="text-xs text-slate-500">
-                Faithful transcription and categorization of answers provided by {currentStudent.name}
+                Faithful transcription and categorization of answers provided by {currentStudent.name} (ID: {currentStudent.studentCode})
               </p>
             </div>
-            <span className="text-xs text-slate-500 font-medium">
-              {questions.length} of {questions.length} completed
+            <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded">
+              {questions.length} of {questions.length} questions completed
             </span>
           </div>
 
@@ -250,7 +266,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                       onClick={() => onSelectQuestion(question.id)}
                       className="text-amber-700 hover:text-amber-900 text-[11px] font-medium self-end sm:self-start shrink-0 flex items-center gap-1 hover:underline"
                     >
-                      <span>Compare across other majors</span>
+                      <span>Compare question</span>
                       <ArrowRight className="w-3 h-3" />
                     </button>
                   </div>

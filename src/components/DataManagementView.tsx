@@ -198,10 +198,14 @@ export const DataManagementView: React.FC<DataManagementViewProps> = ({
                   {idx + 1}
                 </span>
                 <div className="truncate">
-                  <span className="block truncate">{st.career}</span>
-                  <span className={`text-[10px] truncate block ${selectedStudentIndex === idx ? 'text-slate-300' : 'text-slate-500'}`}>
-                    {st.name}
-                  </span>
+                  <span className="block truncate font-medium">{st.name}</span>
+                  <div className="flex items-center gap-1.5 text-[10px]">
+                    <span className="font-mono text-amber-800 font-bold">{st.studentCode}</span>
+                    <span className="text-slate-400">·</span>
+                    <span className={`truncate ${selectedStudentIndex === idx ? 'text-slate-300' : 'text-slate-500'}`}>
+                      {st.career.split(' (')[0]}
+                    </span>
+                  </div>
                 </div>
               </button>
             ))}
@@ -209,9 +213,14 @@ export const DataManagementView: React.FC<DataManagementViewProps> = ({
 
           {/* Right edit form */}
           <div className="md:col-span-3 bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-5">
-            <h3 className="font-bold text-slate-900 text-base border-b border-slate-100 pb-3">
-              Student #{selectedStudentIndex + 1}: {currentStudents[selectedStudentIndex].career}
-            </h3>
+            <div className="border-b border-slate-100 pb-3 flex flex-wrap items-center justify-between gap-2">
+              <h3 className="font-bold text-slate-900 text-base">
+                Student #{selectedStudentIndex + 1}: {currentStudents[selectedStudentIndex].name}
+              </h3>
+              <span className="font-mono bg-amber-50 text-amber-900 border border-amber-200 px-2 py-0.5 rounded text-xs font-bold">
+                ID: {currentStudents[selectedStudentIndex].studentCode}
+              </span>
+            </div>
 
             {/* General profile fields */}
             <div className="grid sm:grid-cols-3 gap-4">
@@ -224,6 +233,19 @@ export const DataManagementView: React.FC<DataManagementViewProps> = ({
                   value={currentStudents[selectedStudentIndex].name}
                   onChange={(e) => handleStudentFieldChange('name', e.target.value)}
                   className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-hidden focus:border-slate-400"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
+                  Student Code / ID:
+                </label>
+                <input
+                  type="text"
+                  value={currentStudents[selectedStudentIndex].studentCode || ''}
+                  onChange={(e) => handleStudentFieldChange('studentCode', e.target.value)}
+                  placeholder="e.g. 720261009"
+                  className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-lg focus:bg-white focus:outline-hidden focus:border-slate-400 font-mono font-bold text-slate-900"
                 />
               </div>
 

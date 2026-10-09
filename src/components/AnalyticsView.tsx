@@ -9,10 +9,17 @@ import {
   Dog, 
   AlertCircle, 
   BookOpen, 
-  Sparkles,
-  Layers,
-  Award,
-  Users
+  Sparkles, 
+  Layers, 
+  Award, 
+  Users, 
+  Tv, 
+  Camera, 
+  MapPin, 
+  Briefcase, 
+  CheckCircle2, 
+  Clapperboard,
+  Heart
 } from 'lucide-react';
 
 interface AnalyticsViewProps {
@@ -28,10 +35,10 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   onSelectCareer,
   onSelectStudent
 }) => {
-  const [activeChartTab, setActiveChartTab] = useState<'all' | 'language' | 'exchange' | 'pedagogy' | 'welfare'>('all');
+  const [activeChartTab, setActiveChartTab] = useState<'all' | 'language' | 'academics' | 'internships' | 'mobility'>('all');
   const [hoveredLevel, setHoveredLevel] = useState<string | null>(null);
 
-  // 1. Calculate English Level Counts
+  // 1. Calculate English Level Counts dynamically
   const levelCounts: Record<string, number> = {
     'B2': 0,
     'B1': 0,
@@ -46,104 +53,54 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
     else if (s.perceivedEnglishLevel.startsWith('A1')) levelCounts['A1']++;
   });
 
-  const totalStudents = students.length;
-  const b2Percent = Math.round((levelCounts['B2'] / totalStudents) * 100) || 0;
-  const b1Percent = Math.round((levelCounts['B1'] / totalStudents) * 100) || 0;
-  const a2Percent = Math.round((levelCounts['A2'] / totalStudents) * 100) || 0;
-  const a1Percent = Math.round((levelCounts['A1'] / totalStudents) * 100) || 0;
+  const totalStudents = students.length || 1;
+  const b2Percent = Math.round((levelCounts['B2'] / totalStudents) * 100);
+  const b1Percent = Math.round((levelCounts['B1'] / totalStudents) * 100);
+  const a2Percent = Math.round((levelCounts['A2'] / totalStudents) * 100);
+  const a1Percent = Math.round((levelCounts['A1'] / totalStudents) * 100);
 
-  // 2. Careers list & distribution
-  const uniqueCareers = Array.from(new Set(students.map((s) => s.career)));
-
-  // Career-wise level breakdown
-  const careerLevelData = uniqueCareers.map((career) => {
-    const careerStudents = students.filter((s) => s.career === career);
-    const count = careerStudents.length;
-    const b2 = careerStudents.filter((s) => s.perceivedEnglishLevel.startsWith('B2')).length;
-    const b1 = careerStudents.filter((s) => s.perceivedEnglishLevel.startsWith('B1')).length;
-    const a2 = careerStudents.filter((s) => s.perceivedEnglishLevel.startsWith('A2')).length;
-    const a1 = careerStudents.filter((s) => s.perceivedEnglishLevel.startsWith('A1')).length;
-
-    return {
-      career,
-      shortName: career.split(' (')[0],
-      count,
-      b2Pct: Math.round((b2 / count) * 100),
-      b1Pct: Math.round((b1 / count) * 100),
-      a2Pct: Math.round((a2 / count) * 100),
-      a1Pct: Math.round((a1 / count) * 100)
-    };
-  });
-
-  // 3. Exchange Destinations Data (Question 9 Analysis)
-  const exchangeDestinations = [
-    { country: 'Germany', flag: '🇩🇪', region: 'Europe', mentions: 8, pct: 28, careers: 'Engineering, Architecture, Business, Law' },
-    { country: 'Spain', flag: '🇪🇸', region: 'Europe', mentions: 7, pct: 24, careers: 'Administration, Marketing, Architecture, Film' },
-    { country: 'France', flag: '🇫🇷', region: 'Europe', mentions: 5, pct: 17, careers: 'Gastronomy, Languages, Administration' },
-    { country: 'United States', flag: '🇺🇸', region: 'North America', mentions: 4, pct: 14, careers: 'Marketing, Film, Languages, Law' },
-    { country: 'Canada', flag: '🇨🇦', region: 'North America', mentions: 3, pct: 10, careers: 'Business, Languages, Engineering' },
-    { country: 'Latin America (Arg/Peru/Chile)', flag: '🌎', region: 'Latin America', mentions: 2, pct: 7, careers: 'Communication, Gastronomy, Business' }
+  // 2. Q1 Data: Program Appeal
+  const q1Data = [
+    { label: 'Photography (Framing, light & camera technique)', count: 5, pct: 63, color: 'bg-violet-600', students: 'Eily Garzón, José Menez, Juan Martínez, Thomas Marulanda, Nicolás Viñas' },
+    { label: 'University Spaces (Studios, editing suites & gear)', count: 3, pct: 37, color: 'bg-amber-500', students: 'Ana María López, John Sebastian Castro, Samuel Pacheco' }
   ];
 
-  // 4. Teaching Semester Preference Data (Question 7 Analysis)
-  const semesterTeachingData = [
-    {
-      group: '1st & 2nd Semester',
-      phase: 'Foundational & Inspirational',
-      count: 10,
-      pct: 35,
-      color: 'bg-emerald-500',
-      reason: 'Inspire first-year students, overcome initial fears, build basic confidence.'
-    },
-    {
-      group: '3rd & 4th Semester',
-      phase: 'Applied Intermediate',
-      count: 9,
-      pct: 31,
-      color: 'bg-blue-500',
-      reason: 'Transition from theory into hands-on studio design, drafting, and screenwriting.'
-    },
-    {
-      group: '5th & 6th Semester',
-      phase: 'Advanced Capstone & Strategy',
-      count: 7,
-      pct: 24,
-      color: 'bg-amber-500',
-      reason: 'Lead case turnaround simulations, complex litigation, and automation projects.'
-    },
-    {
-      group: '7th & 8th Semester',
-      phase: 'Multilateral & Graduation',
-      count: 3,
-      pct: 10,
-      color: 'bg-indigo-600',
-      reason: 'Conduct international trade negotiations and professional portfolio defense.'
-    }
+  // 3. Q2 Data: Favorite Subjects
+  const q2Data = [
+    { subject: 'Photoshop', count: 3, pct: 38, color: 'bg-blue-600', desc: 'Digital color grading, matte art, image manipulation' },
+    { subject: 'Photography', count: 3, pct: 38, color: 'bg-purple-600', desc: 'Composition, studio flash, natural light on campus' },
+    { subject: 'Narrative Workshop', count: 2, pct: 25, color: 'bg-emerald-600', desc: 'Screenplay structure, dialogue, dramatic tension' }
   ];
 
-  // 5. Student Pain Points / Dislikes (Question 4 Analysis)
-  const painPointsData = [
-    { label: 'Sleep Deprivation & Delivery Crises', score: 38, icon: '🌙', desc: 'Overnight project deadlines and architectural juries' },
-    { label: 'Bogotá Urban Commute & SITP Delays', score: 31, icon: '🚌', desc: 'Long travel times and heavy traffic across the city' },
-    { label: 'High Material & Software Expenses', score: 18, icon: '🏷️', desc: 'Model materials, kitchen equipment, 3D printing filaments' },
-    { label: 'Theory vs Practical Real-world Gap', score: 13, icon: '📚', desc: 'Excessive memory-based testing before hands-on application' }
+  // 4. Q4 Data: Internships / Practicums
+  const q4Data = [
+    { network: 'Both RCN and Caracol TV together', count: 4, pct: 50, color: 'bg-amber-600', focus: 'Multi-camera studio filming, live broadcast and production' },
+    { network: 'RCN and Caracol TV (Audiovisual crews)', count: 4, pct: 50, color: 'bg-indigo-600', focus: 'Floor assistance, camera operations, video editing workflows' }
   ];
 
-  // 6. Ugus Welfare Care Consensus (Question 8 Analysis)
-  const ugusCareData = [
-    { label: 'Fresh Clean Water Dispensers', rate: 100, desc: 'Dispensers kept filled in garden courtyards' },
-    { label: 'Zero Harmful Human Junk Scraps', rate: 96, desc: 'No bones, chocolate, or seasoned food scraps' },
-    { label: 'Protected Resting & Nap Zones', rate: 92, desc: 'Safe spaces near Tagaste courtyard free from disturbance' },
-    { label: 'Veterinary Vaccination Fund', rate: 88, desc: 'Student council health checkup and flea treatment fund' }
+  // 5. Q5 Data: Career Improvement
+  const q5Data = [
+    { strategy: 'Study and prepare more (Theory & technical reading)', count: 7, pct: 88, color: 'bg-emerald-600' },
+    { strategy: 'Direct hands-on shooting & independent production', count: 1, pct: 12, color: 'bg-amber-600' }
   ];
 
-  // 7. Interdisciplinary Second Careers (Question 11)
-  const secondCareerCategories = [
-    { domain: 'Engineering, IoT & Data Science', pct: 28, color: 'bg-cyan-600', careers: 'Chosen by Business, Film, Architecture' },
-    { domain: 'Psychology & Behavioral Science', pct: 24, color: 'bg-purple-600', careers: 'Chosen by Marketing, Languages, Law' },
-    { domain: 'Law, Policy & Governance', pct: 20, color: 'bg-indigo-600', careers: 'Chosen by Business, Communication' },
-    { domain: 'Economics & Corporate Strategy', pct: 16, color: 'bg-emerald-600', careers: 'Chosen by Administration, Gastronomy' },
-    { domain: 'Philosophy, Arts & Literature', pct: 12, color: 'bg-amber-600', careers: 'Chosen by Film, Communication, Law' }
+  // 6. Q6 Data: Hugos Campus Pet Care
+  const q6Data = [
+    { action: 'Take care of its habitat & keep green areas clean', count: 5, pct: 63, color: 'bg-emerald-600', desc: 'Fresh water bowls, no litter or toxic human food' },
+    { action: 'Haven’t encountered him yet on class commute', count: 3, pct: 37, color: 'bg-slate-500', desc: 'Respect animal life when crossing campus pathways' }
+  ];
+
+  // 7. Q7 Data: Student Exchange Destinations
+  const q7Data = [
+    { destination: 'USA / Hollywood', count: 4, pct: 50, flag: '🇺🇸', color: 'bg-blue-600', note: 'California studios, film directing & cinematography' },
+    { destination: 'Mexico', count: 2, pct: 25, flag: '🇲🇽', color: 'bg-emerald-600', note: 'Cinematographic heritage, documentary schools & production houses' },
+    { destination: 'Remain in Colombia', count: 2, pct: 25, flag: '🇨🇴', color: 'bg-amber-600', note: 'Focus on national stories and local short films first' }
+  ];
+
+  // 8. Q8 Data: Practice Career
+  const q8Data = [
+    { target: 'Television, Film & Streaming (Netflix)', count: 7, pct: 88, color: 'bg-rose-600', desc: 'National television networks, cinema festivals, global series' },
+    { target: 'Canada (VFX & Digital Animation Studios)', count: 1, pct: 12, color: 'bg-cyan-600', desc: 'International visual effects and digital post-production' }
   ];
 
   return (
@@ -160,43 +117,43 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           </div>
 
           <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-white leading-snug">
-            Visual Qualitative & Quantitative Fieldwork Insights
+            Visual Fieldwork Analytics & Empirical Infographics
           </h2>
 
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
-            Statistical infographics synthesizing the 11 questions answered across 10 university degree programs: Interviewer-assessed CEFR language levels, global exchange choices, teaching inclinations, and campus community indicators.
+            Statistical charts synthesizing the 8 research questions answered by the 8 interviewed students in Film and Television (UniAgustiniana): CEFR language levels, vocational preferences, campus space consensus, broadcast internships, and global exchange targets.
           </p>
 
           {/* Quick Metrics Ribbon */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-700/80">
             <div>
               <span className="block text-2xl font-bold text-amber-400">{students.length}</span>
-              <span className="text-xs text-slate-300">Total Interviewees</span>
+              <span className="text-xs text-slate-300">Interviewed Students</span>
             </div>
             <div>
               <span className="block text-2xl font-bold text-emerald-400">{b1Percent + b2Percent}%</span>
-              <span className="text-xs text-slate-300">Intermediate CEFR (B1/B2)</span>
-            </div>
-            <div>
-              <span className="block text-2xl font-bold text-amber-400">69%</span>
-              <span className="text-xs text-slate-300">Target Europe for Exchange</span>
+              <span className="text-xs text-slate-300">CEFR Intermediate (B1/B2)</span>
             </div>
             <div>
               <span className="block text-2xl font-bold text-emerald-400">100%</span>
-              <span className="text-xs text-slate-300">Ugus Animal Care Empathy</span>
+              <span className="text-xs text-slate-300">Green Area Affinity (Q3)</span>
+            </div>
+            <div>
+              <span className="block text-2xl font-bold text-amber-400">100%</span>
+              <span className="text-xs text-slate-300">RCN / Caracol TV Reach (Q4)</span>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Infographics Category Filter Buttons */}
+      {/* Category Filter Buttons */}
       <div className="flex items-center gap-1.5 overflow-x-auto bg-white p-2 rounded-xl border border-slate-200 shadow-xs no-scrollbar">
         {[
-          { id: 'all', label: 'All Visualizations', icon: Layers },
-          { id: 'language', label: 'English CEFR Distribution', icon: Award },
-          { id: 'exchange', label: 'Global Exchanges (Q9)', icon: Globe2 },
-          { id: 'pedagogy', label: 'Teaching Aspirations (Q7)', icon: GraduationCap },
-          { id: 'welfare', label: 'Campus Life & Ugus (Q4 & Q8)', icon: Dog }
+          { id: 'all', label: 'All 8 Question Charts', icon: Layers },
+          { id: 'language', label: 'CEFR English Levels', icon: Award },
+          { id: 'academics', label: 'Vocation & Subjects (Q1 & Q2)', icon: Camera },
+          { id: 'internships', label: 'Media & Practicums (Q4 & Q8)', icon: Tv },
+          { id: 'mobility', label: 'Exchanges & Mascot Hugos (Q6 & Q7)', icon: Globe2 }
         ].map((tab) => {
           const Icon = tab.icon;
           const isSelected = activeChartTab === tab.id;
@@ -206,7 +163,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               onClick={() => setActiveChartTab(tab.id as any)}
               className={`flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-lg whitespace-nowrap transition-colors ${
                 isSelected
-                  ? 'bg-slate-900 text-amber-400 shadow-xs'
+                  ? 'bg-slate-900 text-amber-400 shadow-xs ring-1 ring-amber-400'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
               }`}
             >
@@ -217,7 +174,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
         })}
       </div>
 
-      {/* SECTION 1: LANGUAGE PROFICIENCY (Donut Chart & Cross-Major Stacked Bar) */}
+      {/* SECTION 1: LANGUAGE PROFICIENCY (Donut Chart & Distribution) */}
       {(activeChartTab === 'all' || activeChartTab === 'language') && (
         <section className="space-y-4">
           <div className="flex items-center justify-between">
@@ -239,456 +196,329 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             {/* SVG Donut Chart Card */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col justify-between">
               <div>
-                <h4 className="font-bold text-slate-900 text-sm mb-1">
-                  Overall CEFR Level Breakdown
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-500 mb-2">
+                  CEFR Distribution Donut Chart
                 </h4>
-                <p className="text-xs text-slate-500 mb-4">
-                  Interactive donut chart representing total percentage
+                <p className="text-xs text-slate-600 leading-relaxed mb-4">
+                  Assessment based on fluency, syntactic clarity, and ease answering the 8 questions in English:
                 </p>
 
-                {/* SVG Donut */}
-                <div className="relative flex items-center justify-center my-4">
-                  <svg className="w-48 h-48 transform -rotate-90" viewBox="0 0 100 100">
-                    {/* Background circle */}
-                    <circle cx="50" cy="50" r="38" fill="transparent" stroke="#f1f5f9" strokeWidth="12" />
-                    {/* B2 Arc (Emerald) */}
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="38"
-                      fill="transparent"
-                      stroke="#059669"
-                      strokeWidth="12"
-                      strokeDasharray={`${(b2Percent * 2.387).toFixed(1)} 238.7`}
-                      strokeDashoffset="0"
-                      className="cursor-pointer transition-all duration-300 hover:opacity-80"
-                      onMouseEnter={() => setHoveredLevel('B2')}
-                      onMouseLeave={() => setHoveredLevel(null)}
-                    />
-                    {/* B1 Arc (Blue) */}
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="38"
-                      fill="transparent"
-                      stroke="#2563eb"
-                      strokeWidth="12"
-                      strokeDasharray={`${(b1Percent * 2.387).toFixed(1)} 238.7`}
-                      strokeDashoffset={`${-(b2Percent * 2.387)}`}
-                      className="cursor-pointer transition-all duration-300 hover:opacity-80"
-                      onMouseEnter={() => setHoveredLevel('B1')}
-                      onMouseLeave={() => setHoveredLevel(null)}
-                    />
-                    {/* A2 Arc (Amber) */}
-                    <circle
-                      cx="50"
-                      cy="50"
-                      r="38"
-                      fill="transparent"
-                      stroke="#d97706"
-                      strokeWidth="12"
-                      strokeDasharray={`${(a2Percent * 2.387).toFixed(1)} 238.7`}
-                      strokeDashoffset={`${-((b2Percent + b1Percent) * 2.387)}`}
-                      className="cursor-pointer transition-all duration-300 hover:opacity-80"
-                      onMouseEnter={() => setHoveredLevel('A2')}
-                      onMouseLeave={() => setHoveredLevel(null)}
-                    />
-                    {/* A1 Arc (Slate) */}
-                    {a1Percent > 0 && (
+                <div className="flex items-center justify-center py-4">
+                  <div className="relative w-44 h-44">
+                    <svg viewBox="0 0 36 36" className="w-full h-full transform -rotate-90">
+                      {/* B2 slice (12.5%): dasharray 12.5 87.5 */}
                       <circle
-                        cx="50"
-                        cy="50"
-                        r="38"
+                        cx="18"
+                        cy="18"
+                        r="15.915"
                         fill="transparent"
-                        stroke="#94a3b8"
-                        strokeWidth="12"
-                        strokeDasharray={`${(a1Percent * 2.387).toFixed(1)} 238.7`}
-                        strokeDashoffset={`${-((b2Percent + b1Percent + a2Percent) * 2.387)}`}
-                        className="cursor-pointer transition-all duration-300 hover:opacity-80"
-                        onMouseEnter={() => setHoveredLevel('A1')}
-                        onMouseLeave={() => setHoveredLevel(null)}
+                        stroke="#059669"
+                        strokeWidth="3.8"
+                        strokeDasharray={`${b2Percent} ${100 - b2Percent}`}
+                        strokeDashoffset="0"
+                        className="transition-all duration-500 hover:opacity-80"
                       />
-                    )}
-                  </svg>
-
-                  {/* Center Text inside Donut */}
-                  <div className="absolute text-center">
-                    <span className="text-3xl font-extrabold text-slate-900 block leading-tight">
-                      {hoveredLevel ? `${hoveredLevel}` : `${b1Percent + b2Percent}%`}
-                    </span>
-                    <span className="text-[11px] font-semibold text-slate-500 uppercase tracking-wider block">
-                      {hoveredLevel
-                        ? `${hoveredLevel === 'B2' ? b2Percent : hoveredLevel === 'B1' ? b1Percent : a2Percent}%`
-                        : 'B1/B2 Total'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* Legend Chips */}
-                <div className="grid grid-cols-2 gap-2 text-xs pt-2">
-                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-emerald-50 border border-emerald-200">
-                    <span className="w-3 h-3 rounded-full bg-emerald-600 shrink-0" />
-                    <div>
-                      <span className="font-bold text-emerald-950 block">B2 Upper Interm.</span>
-                      <span className="text-[11px] text-emerald-800">{levelCounts['B2']} students ({b2Percent}%)</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-blue-50 border border-blue-200">
-                    <span className="w-3 h-3 rounded-full bg-blue-600 shrink-0" />
-                    <div>
-                      <span className="font-bold text-blue-950 block">B1 Intermediate</span>
-                      <span className="text-[11px] text-blue-800">{levelCounts['B1']} students ({b1Percent}%)</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-amber-50 border border-amber-200">
-                    <span className="w-3 h-3 rounded-full bg-amber-600 shrink-0" />
-                    <div>
-                      <span className="font-bold text-amber-950 block">A2 Elementary</span>
-                      <span className="text-[11px] text-amber-800">{levelCounts['A2']} students ({a2Percent}%)</span>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 p-1.5 rounded-lg bg-slate-50 border border-slate-200">
-                    <span className="w-3 h-3 rounded-full bg-slate-400 shrink-0" />
-                    <div>
-                      <span className="font-bold text-slate-900 block">A1 Beginner</span>
-                      <span className="text-[11px] text-slate-600">{levelCounts['A1']} students ({a1Percent}%)</span>
+                      {/* B1 slice (50%): dashoffset -12.5 */}
+                      <circle
+                        cx="18"
+                        cy="18"
+                        r="15.915"
+                        fill="transparent"
+                        stroke="#2563eb"
+                        strokeWidth="3.8"
+                        strokeDasharray={`${b1Percent} ${100 - b1Percent}`}
+                        strokeDashoffset={`-${b2Percent}`}
+                        className="transition-all duration-500 hover:opacity-80"
+                      />
+                      {/* A2 slice (37.5%): dashoffset -62.5 */}
+                      <circle
+                        cx="18"
+                        cy="18"
+                        r="15.915"
+                        fill="transparent"
+                        stroke="#f59e0b"
+                        strokeWidth="3.8"
+                        strokeDasharray={`${a2Percent} ${100 - a2Percent}`}
+                        strokeDashoffset={`-${b2Percent + b1Percent}`}
+                        className="transition-all duration-500 hover:opacity-80"
+                      />
+                    </svg>
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                      <span className="text-xl font-black text-slate-900">{b1Percent + b2Percent}%</span>
+                      <span className="text-[10px] text-slate-500 font-semibold uppercase">Intermediate+</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-3 mt-4 border-t border-slate-100 text-xs text-slate-500 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-                <span>Hover over donut segments to inspect individual levels.</span>
+              {/* Legend with Counts */}
+              <div className="grid grid-cols-3 gap-2 pt-4 border-t border-slate-100 text-center">
+                <div className="p-2 rounded-lg bg-emerald-50 border border-emerald-200">
+                  <span className="block text-[11px] font-bold text-emerald-800">B2 Upper</span>
+                  <span className="text-sm font-black text-emerald-900">{levelCounts['B2']} ({b2Percent}%)</span>
+                </div>
+                <div className="p-2 rounded-lg bg-blue-50 border border-blue-200">
+                  <span className="block text-[11px] font-bold text-blue-800">B1 Interm.</span>
+                  <span className="text-sm font-black text-blue-900">{levelCounts['B1']} ({b1Percent}%)</span>
+                </div>
+                <div className="p-2 rounded-lg bg-amber-50 border border-amber-200">
+                  <span className="block text-[11px] font-bold text-amber-800">A2 Elem.</span>
+                  <span className="text-sm font-black text-amber-900">{levelCounts['A2']} ({a2Percent}%)</span>
+                </div>
               </div>
             </div>
 
-            {/* Stacked Horizontal Bar Chart by Career */}
-            <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4 flex flex-col justify-between">
-              <div>
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-3">
-                  <div>
-                    <h4 className="font-bold text-slate-900 text-sm">
-                      Level Distribution Compared Across the 10 Majors
-                    </h4>
-                    <p className="text-xs text-slate-500">
-                      Stacked comparative bar chart (B2: green, B1: blue, A2: amber)
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-3 text-[11px] text-slate-600">
-                    <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-emerald-600" /> B2</span>
-                    <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-blue-600" /> B1</span>
-                    <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-amber-600" /> A2</span>
-                  </div>
-                </div>
-
-                {/* Stacked Bars */}
-                <div className="space-y-2.5">
-                  {careerLevelData.map((item) => (
-                    <div key={item.career} className="space-y-1">
-                      <div className="flex justify-between text-xs">
-                        <span className="font-semibold text-slate-800 truncate max-w-[240px]">
-                          {item.shortName}
-                        </span>
-                        <span className="text-slate-500 text-[11px]">
-                          {item.count} std. (B2: {item.b2Pct}% · B1: {item.b1Pct}% · A2: {item.a2Pct}%)
-                        </span>
-                      </div>
-                      <div className="h-3.5 w-full bg-slate-100 rounded-full flex overflow-hidden shadow-2xs">
-                        {item.b2Pct > 0 && (
-                          <div
-                            style={{ width: `${item.b2Pct}%` }}
-                            className="bg-emerald-600 h-full transition-all"
-                            title={`B2: ${item.b2Pct}%`}
-                          />
-                        )}
-                        {item.b1Pct > 0 && (
-                          <div
-                            style={{ width: `${item.b1Pct}%` }}
-                            className="bg-blue-600 h-full transition-all"
-                            title={`B1: ${item.b1Pct}%`}
-                          />
-                        )}
-                        {item.a2Pct > 0 && (
-                          <div
-                            style={{ width: `${item.a2Pct}%` }}
-                            className="bg-amber-600 h-full transition-all"
-                            title={`A2: ${item.a2Pct}%`}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-slate-100 text-xs text-slate-600 flex items-center justify-between">
-                <span>Foreign Languages & Business programs lead in B2 proficiency.</span>
-                <span className="font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  ESP Focus Required
-                </span>
-              </div>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* SECTION 2: GLOBAL STUDENT EXCHANGES (Horizontal Ranking Bar & Regional Map Breakdown) */}
-      {(activeChartTab === 'all' || activeChartTab === 'exchange') && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                <Globe2 className="w-5 h-5 text-blue-600" />
-                <span>Target International Exchange Destinations (Question 9)</span>
-              </h3>
-              <p className="text-xs text-slate-500">
-                Where students aspire to study abroad and how destinations correlate with academic majors
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Horizontal Ranking Bar Chart */}
+            {/* Individual Student Evaluation Ledger */}
             <div className="lg:col-span-2 bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
-              <div className="border-b border-slate-100 pb-3">
-                <h4 className="font-bold text-slate-900 text-sm">
-                  Country Preference Ranking
-                </h4>
-                <p className="text-xs text-slate-500">
-                  Relative percentage based on student interview transcripts
-                </p>
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <div>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Student-by-Student Qualitative CEFR Mapping
+                  </h4>
+                  <p className="text-xs text-slate-500">
+                    Perceived communicative level linked with verified student codes
+                  </p>
+                </div>
               </div>
 
-              <div className="space-y-3.5">
-                {exchangeDestinations.map((dest, idx) => (
-                  <div key={dest.country} className="space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <span className="font-semibold text-slate-800 flex items-center gap-1.5">
-                        <span className="text-base">{dest.flag}</span>
-                        <span>{idx + 1}. {dest.country}</span>
-                        <span className="text-[11px] text-slate-400 font-normal">({dest.region})</span>
-                      </span>
-                      <span className="font-bold text-slate-900">{dest.pct}%</span>
+              <div className="grid sm:grid-cols-2 gap-3">
+                {students.map((st) => (
+                  <div
+                    key={st.id}
+                    className="p-3 rounded-lg border border-slate-200 bg-slate-50/60 hover:bg-white hover:border-slate-300 transition-all flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-8 h-8 rounded-lg ${st.avatarColor} text-white font-bold text-xs flex items-center justify-center shrink-0`}>
+                        {st.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
+                      </div>
+                      <div>
+                        <span className="block text-xs font-bold text-slate-900 leading-tight">
+                          {st.name}
+                        </span>
+                        <span className="font-mono text-[10px] text-amber-800 font-semibold">
+                          ID: {st.studentCode}
+                        </span>
+                      </div>
                     </div>
 
-                    <div className="h-3 w-full bg-slate-100 rounded-full overflow-hidden">
-                      <div
-                        style={{ width: `${dest.pct * 3.2}%` }}
-                        className="h-full rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 transition-all duration-500"
-                      />
-                    </div>
-
-                    <div className="text-[11px] text-slate-500 italic pl-6">
-                      Primary majors: {dest.careers}
-                    </div>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded border ${
+                      st.perceivedEnglishLevel.startsWith('B2')
+                        ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                        : st.perceivedEnglishLevel.startsWith('B1')
+                        ? 'bg-blue-100 text-blue-900 border-blue-300'
+                        : 'bg-amber-100 text-amber-900 border-amber-300'
+                    }`}>
+                      {st.perceivedEnglishLevel.split(' - ')[0]}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* Regional Infographic Card */}
-            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs flex flex-col justify-between">
-              <div>
-                <h4 className="font-bold text-slate-900 text-sm mb-1">
-                  Global Continental Split
-                </h4>
-                <p className="text-xs text-slate-500 mb-4">
-                  Regional destination clusters
-                </p>
-
-                <div className="space-y-4">
-                  <div className="p-3.5 bg-blue-50/80 rounded-xl border border-blue-200 space-y-1.5">
-                    <div className="flex justify-between items-baseline">
-                      <span className="font-bold text-blue-950 text-xs">European Union</span>
-                      <span className="text-lg font-extrabold text-blue-700">69%</span>
-                    </div>
-                    <div className="w-full bg-blue-200 rounded-full h-2">
-                      <div className="bg-blue-600 h-2 rounded-full" style={{ width: '69%' }} />
-                    </div>
-                    <p className="text-[11px] text-blue-900 leading-snug">
-                      Germany (DAAD, Bauhaus), Spain (Madrid, ESADE), France (Paris, Lyon), Netherlands.
-                    </p>
-                  </div>
-
-                  <div className="p-3.5 bg-amber-50/80 rounded-xl border border-amber-200 space-y-1.5">
-                    <div className="flex justify-between items-baseline">
-                      <span className="font-bold text-amber-950 text-xs">North America</span>
-                      <span className="text-lg font-extrabold text-amber-700">24%</span>
-                    </div>
-                    <div className="w-full bg-amber-200 rounded-full h-2">
-                      <div className="bg-amber-600 h-2 rounded-full" style={{ width: '24%' }} />
-                    </div>
-                    <p className="text-[11px] text-amber-900 leading-snug">
-                      United States (USC, New York) and Canada (Toronto, Montreal bilingual immersion).
-                    </p>
-                  </div>
-
-                  <div className="p-3.5 bg-emerald-50/80 rounded-xl border border-emerald-200 space-y-1.5">
-                    <div className="flex justify-between items-baseline">
-                      <span className="font-bold text-emerald-950 text-xs">Latin America</span>
-                      <span className="text-lg font-extrabold text-emerald-700">7%</span>
-                    </div>
-                    <div className="w-full bg-emerald-200 rounded-full h-2">
-                      <div className="bg-emerald-600 h-2 rounded-full" style={{ width: '7%' }} />
-                    </div>
-                    <p className="text-[11px] text-emerald-900 leading-snug">
-                      Argentina (UBA Journalism), Peru (Lima Gastronomy), Chile (Enterprise).
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-3 border-t border-slate-100 text-xs text-slate-500 flex items-center gap-1">
-                <span>Reflects strong ambition for English & European masteries.</span>
-              </div>
-            </div>
           </div>
         </section>
       )}
 
-      {/* SECTION 3: TEACHING ASPIRATIONS & PEDAGOGICAL TIMELINE (Question 7) */}
-      {(activeChartTab === 'all' || activeChartTab === 'pedagogy') && (
+      {/* SECTION 2: ACADEMICS & VOCATION (Q1 & Q2) */}
+      {(activeChartTab === 'all' || activeChartTab === 'academics') && (
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                <GraduationCap className="w-5 h-5 text-emerald-600" />
-                <span>Which Semester Would Students Like to Teach? (Question 7)</span>
+                <Camera className="w-5 h-5 text-amber-600" />
+                <span>Program Appeal & Favorite Subjects (Q1 & Q2)</span>
               </h3>
               <p className="text-xs text-slate-500">
-                Pedagogical inclinations across academic stages: From foundational inspiration to advanced capstone mentorship
-              </p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {semesterTeachingData.map((sem, idx) => (
-              <div
-                key={sem.group}
-                className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between space-y-3 relative overflow-hidden"
-              >
-                <div className={`absolute top-0 left-0 right-0 h-1.5 ${sem.color}`} />
-                <div>
-                  <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
-                    <span className="font-bold uppercase tracking-wider text-[10px]">
-                      Phase {idx + 1}
-                    </span>
-                    <span className="font-extrabold text-slate-900 text-sm">
-                      {sem.pct}%
-                    </span>
-                  </div>
-
-                  <h4 className="font-bold text-slate-900 text-sm leading-snug">
-                    {sem.group}
-                  </h4>
-                  <span className="text-[11px] font-medium text-amber-700 block mb-2">
-                    {sem.phase}
-                  </span>
-
-                  <p className="text-xs text-slate-600 leading-relaxed">
-                    "{sem.reason}"
-                  </p>
-                </div>
-
-                <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-slate-500 font-medium">Cohort preference:</span>
-                  <span className="font-bold text-slate-900 bg-slate-100 px-2 py-0.5 rounded">
-                    {sem.count} responses
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
-      {/* SECTION 4: CAMPUS WELFARE & STUDENT PAIN POINTS (Question 4 & Question 8) */}
-      {(activeChartTab === 'all' || activeChartTab === 'welfare') && (
-        <section className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                <Dog className="w-5 h-5 text-amber-600" />
-                <span>Campus Mascot Ugus (Q8) & Student Stressors (Q4)</span>
-              </h3>
-              <p className="text-xs text-slate-500">
-                Institutional culture, animal welfare consensus, and academic lifestyle pain points in Bogotá
+                Core vocational identity and engagement across the curriculum
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Ugus Care Consensus Gauges */}
+            {/* Q1: What do you like most? */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
-              <div className="border-b border-slate-100 pb-3 flex items-center justify-between">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <div>
-                  <h4 className="font-bold text-slate-900 text-sm">
-                    Ugus Animal Welfare Action Protocols
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
+                    Question 1 Analysis
+                  </span>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    What do you like most about your career?
                   </h4>
-                  <p className="text-xs text-slate-500">
-                    Agreement percentage among the 10 interviewed majors
-                  </p>
                 </div>
-                <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  100% Empathy
-                </span>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                {ugusCareData.map((item) => (
-                  <div key={item.label} className="p-3.5 bg-amber-50/60 rounded-xl border border-amber-200/80 space-y-1">
-                    <div className="flex items-center justify-between">
-                      <span className="text-xs font-bold text-slate-900 leading-tight">
-                        {item.label}
-                      </span>
-                      <span className="text-xs font-extrabold text-amber-700">
-                        {item.rate}%
-                      </span>
+              <div className="space-y-3 pt-2">
+                {q1Data.map((item, idx) => (
+                  <div key={idx} className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="font-semibold text-slate-800">{item.label}</span>
+                      <span className="font-bold text-slate-900">{item.count} std. ({item.pct}%)</span>
                     </div>
-                    <div className="w-full bg-amber-200 rounded-full h-1.5 my-1">
-                      <div className="bg-amber-600 h-1.5 rounded-full" style={{ width: `${item.rate}%` }} />
+                    <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                      <div
+                        className={`${item.color} h-3 rounded-full transition-all`}
+                        style={{ width: `${item.pct}%` }}
+                      />
                     </div>
-                    <p className="text-[11px] text-slate-600 leading-tight">
-                      {item.desc}
+                    <p className="text-[10px] text-slate-500 italic">
+                      Mentioned by: {item.students}
                     </p>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Student Pain Points Infographic */}
+            {/* Q2: Favorite Subjects */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
-              <div className="border-b border-slate-100 pb-3">
-                <h4 className="font-bold text-slate-900 text-sm">
-                  What Students Dislike About University Life (Q4)
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
+                    Question 2 Analysis
+                  </span>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    What is your favorite subject?
+                  </h4>
+                </div>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                {q2Data.map((item, idx) => (
+                  <div key={idx} className="space-y-1">
+                    <div className="flex justify-between text-xs">
+                      <span className="font-semibold text-slate-800">{item.subject}</span>
+                      <span className="font-bold text-slate-900">{item.count} std. ({item.pct}%)</span>
+                    </div>
+                    <div className="w-full bg-slate-100 rounded-full h-3 overflow-hidden">
+                      <div
+                        className={`${item.color} h-3 rounded-full transition-all`}
+                        style={{ width: `${item.pct}%` }}
+                      />
+                    </div>
+                    <p className="text-[10px] text-slate-500">
+                      {item.desc}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Q3: Unanimous Campus Space Banner */}
+          <div className="bg-emerald-50/90 rounded-xl p-5 border border-emerald-300 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-lg">
+                100%
+              </div>
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
+                  Question 3 Unanimous Finding
+                </span>
+                <h4 className="text-sm font-bold text-slate-900">
+                  Campus Space Preference: The Green Area of UniAgustiniana
                 </h4>
-                <p className="text-xs text-slate-500">
-                  Primary systemic stressors identified across undergraduate cohorts
+                <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                  All 8 surveyed students (100%) unanimously selected the green area of Campus Tagaste as their favorite location, citing open natural lighting, peaceful atmosphere for script reading, and crew meeting space.
                 </p>
+              </div>
+            </div>
+            <span className="text-xs font-bold text-emerald-800 bg-emerald-200/60 px-3 py-1.5 rounded-lg shrink-0">
+              8 of 8 Students in Total Consensus
+            </span>
+          </div>
+        </section>
+      )}
+
+      {/* SECTION 3: MEDIA, INTERNSHIPS & PRACTICE (Q4, Q5 & Q8) */}
+      {(activeChartTab === 'all' || activeChartTab === 'internships') && (
+        <section className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
+                <Tv className="w-5 h-5 text-amber-600" />
+                <span>Media Internships & Employability Projections (Q4, Q5 & Q8)</span>
+              </h3>
+              <p className="text-xs text-slate-500">
+                Industry alignment with Colombian television networks and streaming platforms
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Q4: Internships */}
+            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
+                  Question 4 (Internships)
+                </span>
+                <h4 className="text-sm font-bold text-slate-900">
+                  Where to do practicums?
+                </h4>
               </div>
 
               <div className="space-y-3">
-                {painPointsData.map((item) => (
-                  <div key={item.label} className="space-y-1">
-                    <div className="flex justify-between text-xs">
-                      <span className="font-semibold text-slate-800 flex items-center gap-1.5">
-                        <span>{item.icon}</span>
-                        <span>{item.label}</span>
-                      </span>
-                      <span className="font-bold text-slate-900">{item.score}%</span>
+                {q4Data.map((item, idx) => (
+                  <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                    <div className="flex justify-between text-xs font-bold text-slate-900">
+                      <span>{item.network}</span>
+                      <span>{item.pct}%</span>
                     </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                    </div>
+                    <p className="text-[10px] text-slate-500">{item.focus}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
 
-                    <div className="h-2.5 w-full bg-slate-100 rounded-full overflow-hidden">
-                      <div
-                        style={{ width: `${item.score * 2.5}%` }}
-                        className="h-full rounded-full bg-gradient-to-r from-rose-500 to-red-600"
-                      />
-                    </div>
+            {/* Q5: Career Improvement */}
+            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
+                  Question 5 (Improvement)
+                </span>
+                <h4 className="text-sm font-bold text-slate-900">
+                  Actions to improve in career?
+                </h4>
+              </div>
 
-                    <div className="text-[11px] text-slate-500 italic">
-                      {item.desc}
+              <div className="space-y-3">
+                {q5Data.map((item, idx) => (
+                  <div key={idx} className="space-y-1">
+                    <div className="flex justify-between text-xs font-semibold text-slate-800">
+                      <span>{item.strategy}</span>
+                      <span>{item.pct}%</span>
                     </div>
+                    <div className="w-full bg-slate-100 rounded-full h-2.5">
+                      <div className={`${item.color} h-2.5 rounded-full`} style={{ width: `${item.pct}%` }} />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Q8: Practice Profession */}
+            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
+                  Question 8 (Employability)
+                </span>
+                <h4 className="text-sm font-bold text-slate-900">
+                  Where to practice career?
+                </h4>
+              </div>
+
+              <div className="space-y-3">
+                {q8Data.map((item, idx) => (
+                  <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                    <div className="flex justify-between text-xs font-bold text-slate-900">
+                      <span>{item.target}</span>
+                      <span>{item.pct}%</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                    </div>
+                    <p className="text-[10px] text-slate-500">{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -697,50 +527,84 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
         </section>
       )}
 
-      {/* SECTION 5: INTERDISCIPLINARY SECOND CAREERS (Question 11 Treemap / Grid) */}
-      {(activeChartTab === 'all' || activeChartTab === 'pedagogy') && (
+      {/* SECTION 4: MOBILITY & MASCOT HUGOS (Q6 & Q7) */}
+      {(activeChartTab === 'all' || activeChartTab === 'mobility') && (
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-amber-600" />
-                <span>Interdisciplinary Complementary Degrees (Question 11)</span>
+                <Globe2 className="w-5 h-5 text-amber-600" />
+                <span>Exchange Mobility & Mascot Hugos Guardianship (Q6 & Q7)</span>
               </h3>
               <p className="text-xs text-slate-500">
-                What secondary discipline students would study to augment their primary profession
+                Internationalization destinations and animal welfare in the university ecosystem
               </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3">
-              {secondCareerCategories.map((item) => (
-                <div
-                  key={item.domain}
-                  className="p-4 rounded-xl border border-slate-200/80 bg-slate-50 flex flex-col justify-between space-y-2 hover:border-slate-300 transition-colors"
-                >
-                  <div>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xl font-extrabold text-slate-900">
-                        {item.pct}%
-                      </span>
-                      <span className={`w-2.5 h-2.5 rounded-full ${item.color}`} />
-                    </div>
-                    <h4 className="font-bold text-xs text-slate-900 leading-snug">
-                      {item.domain}
-                    </h4>
-                  </div>
-                  <p className="text-[11px] text-slate-600 leading-relaxed border-t border-slate-200/60 pt-2">
-                    {item.careers}
-                  </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Q7: Exchange Destinations */}
+            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
+                    Question 7 Analysis
+                  </span>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Would you like to do a student exchange? Where?
+                  </h4>
                 </div>
-              ))}
+              </div>
+
+              <div className="space-y-3 pt-2">
+                {q7Data.map((dest, idx) => (
+                  <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                    <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                      <span className="flex items-center gap-1.5">
+                        <span className="text-base">{dest.flag}</span>
+                        <span>{dest.destination}</span>
+                      </span>
+                      <span>{dest.count} std. ({dest.pct}%)</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div className={`${dest.color} h-2 rounded-full`} style={{ width: `${dest.pct}%` }} />
+                    </div>
+                    <p className="text-[10px] text-slate-500">{dest.note}</p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <div className="bg-amber-50/70 p-3 rounded-lg border border-amber-200 text-xs text-amber-950 flex items-center justify-between">
-              <span>
-                <strong>Fieldwork Takeaway:</strong> 100% of respondents pick a complementary technical, behavioral, or legal booster rather than an unrelated career.
-              </span>
+            {/* Q6: Hugos Mascot Care */}
+            <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-2">
+                <div className="flex items-center gap-2">
+                  <Dog className="w-4 h-4 text-amber-600" />
+                  <div>
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
+                      Question 6 Analysis
+                    </span>
+                    <h4 className="text-sm font-bold text-slate-900">
+                      How can you take care of Hugos?
+                    </h4>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                {q6Data.map((item, idx) => (
+                  <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                    <div className="flex justify-between text-xs font-bold text-slate-900">
+                      <span>{item.action}</span>
+                      <span>{item.count} std. ({item.pct}%)</span>
+                    </div>
+                    <div className="w-full bg-slate-200 rounded-full h-2">
+                      <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                    </div>
+                    <p className="text-[10px] text-slate-500">{item.desc}</p>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>

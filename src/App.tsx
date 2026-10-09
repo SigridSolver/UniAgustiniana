@@ -4,7 +4,8 @@ import {
   initialQuestions, 
   initialStudents, 
   initialInterviewers,
-  analyticalInsights 
+  analyticalInsights,
+  universityCareersList
 } from './data/initialData';
 import { ProjectMetadata, Question, InterviewedStudent, Interviewer, ViewTab } from './types';
 import { Header } from './components/Header';
@@ -21,35 +22,32 @@ import { DataManagementView } from './components/DataManagementView';
 import { PrintReportView } from './components/PrintReportView';
 
 export default function App() {
-  // Load data from localStorage (v4 key ensures fresh dataset with expanded cohort & careers view)
+  // Load data from localStorage (v5 key ensures fresh verified Film & TV dataset with student codes)
   const [metadata, setMetadata] = useState<ProjectMetadata>(() => {
-    const saved = localStorage.getItem('uniagustiniana_meta_v4');
+    const saved = localStorage.getItem('uniagustiniana_meta_v5');
     return saved ? JSON.parse(saved) : initialMetadata;
   });
 
   const [questions, setQuestions] = useState<Question[]>(() => {
-    const saved = localStorage.getItem('uniagustiniana_questions_v4');
+    const saved = localStorage.getItem('uniagustiniana_questions_v5');
     return saved ? JSON.parse(saved) : initialQuestions;
   });
 
   const [students, setStudents] = useState<InterviewedStudent[]>(() => {
-    const saved = localStorage.getItem('uniagustiniana_students_v4');
+    const saved = localStorage.getItem('uniagustiniana_students_v5');
     return saved ? JSON.parse(saved) : initialStudents;
   });
 
   const [interviewers, setInterviewers] = useState<Interviewer[]>(() => {
-    const saved = localStorage.getItem('uniagustiniana_interviewers_v4');
+    const saved = localStorage.getItem('uniagustiniana_interviewers_v5');
     return saved ? JSON.parse(saved) : initialInterviewers;
   });
 
   const [activeTab, setActiveTab] = useState<ViewTab>('summary');
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(1);
-  const [selectedStudentId, setSelectedStudentId] = useState<string>(students[0]?.id || 'arq-1');
-  const [selectedCareer, setSelectedCareer] = useState<string>('Architecture (Arquitectura)');
+  const [selectedStudentId, setSelectedStudentId] = useState<string>(students[0]?.id || 'cin-1');
+  const [selectedCareer, setSelectedCareer] = useState<string>('Film and Television (Cine y Televisión)');
   const [isPrintMode, setIsPrintMode] = useState<boolean>(false);
-
-  // Distinct careers count
-  const uniqueCareers = Array.from(new Set(students.map((s) => s.career)));
 
   // Persistence handler
   const handleSaveData = (
@@ -63,10 +61,10 @@ export default function App() {
     setStudents(newStudents);
     setInterviewers(newInterviewers);
 
-    localStorage.setItem('uniagustiniana_meta_v4', JSON.stringify(newMetadata));
-    localStorage.setItem('uniagustiniana_questions_v4', JSON.stringify(newQuestions));
-    localStorage.setItem('uniagustiniana_students_v4', JSON.stringify(newStudents));
-    localStorage.setItem('uniagustiniana_interviewers_v4', JSON.stringify(newInterviewers));
+    localStorage.setItem('uniagustiniana_meta_v5', JSON.stringify(newMetadata));
+    localStorage.setItem('uniagustiniana_questions_v5', JSON.stringify(newQuestions));
+    localStorage.setItem('uniagustiniana_students_v5', JSON.stringify(newStudents));
+    localStorage.setItem('uniagustiniana_interviewers_v5', JSON.stringify(newInterviewers));
   };
 
   const handleResetData = () => {
@@ -76,10 +74,10 @@ export default function App() {
       setStudents(initialStudents);
       setInterviewers(initialInterviewers);
 
-      localStorage.removeItem('uniagustiniana_meta_v4');
-      localStorage.removeItem('uniagustiniana_questions_v4');
-      localStorage.removeItem('uniagustiniana_students_v4');
-      localStorage.removeItem('uniagustiniana_interviewers_v4');
+      localStorage.removeItem('uniagustiniana_meta_v5');
+      localStorage.removeItem('uniagustiniana_questions_v5');
+      localStorage.removeItem('uniagustiniana_students_v5');
+      localStorage.removeItem('uniagustiniana_interviewers_v5');
     }
   };
 
@@ -113,6 +111,7 @@ export default function App() {
     const newStudent: InterviewedStudent = {
       id: newStudentId,
       name: `Student ${currentCount + 1} (${targetCareer.split(' ')[0]})`,
+      studentCode: `7202610${(currentCount + 10).toString().padStart(2, '0')}`,
       career: targetCareer,
       faculty: matchedFaculty,
       semester: `${Math.min(currentCount + 3, 8)}th Semester`,
@@ -126,7 +125,7 @@ export default function App() {
 
     const updatedStudents = [...students, newStudent];
     setStudents(updatedStudents);
-    localStorage.setItem('uniagustiniana_students_v4', JSON.stringify(updatedStudents));
+    localStorage.setItem('uniagustiniana_students_v5', JSON.stringify(updatedStudents));
     setSelectedStudentId(newStudentId);
     setSelectedCareer(targetCareer);
   };
@@ -171,7 +170,7 @@ export default function App() {
         onOpenEditor={() => setActiveTab('editor')}
         questionsCount={questions.length}
         studentsCount={students.length}
-        careersCount={uniqueCareers.length}
+        careersCount={universityCareersList.length}
       />
 
       {/* Navigation Bar */}
@@ -180,7 +179,7 @@ export default function App() {
         onTabChange={setActiveTab}
         questionsCount={questions.length}
         studentsCount={students.length}
-        careersCount={uniqueCareers.length}
+        careersCount={universityCareersList.length}
       />
 
       {/* Main View Container */}
@@ -289,9 +288,9 @@ export default function App() {
             </p>
           </div>
           <div className="flex flex-wrap items-center justify-center gap-4 text-slate-400">
-            <span>{uniqueCareers.length} Majors (Tabs)</span>
+            <span>{universityCareersList.length} University Majors</span>
             <span aria-hidden="true">·</span>
-            <span>{students.length} Interviewed Students (Max 8/major)</span>
+            <span>{students.length} Verified Interviewees (Film & TV Cohort)</span>
             <span aria-hidden="true">·</span>
             <span>{questions.length} Structured Questions</span>
             <span aria-hidden="true">·</span>

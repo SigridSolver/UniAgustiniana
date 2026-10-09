@@ -6,7 +6,9 @@ import {
   MapPin, 
   BookOpen, 
   ShieldCheck, 
-  Quote
+  Quote,
+  Star,
+  Award
 } from 'lucide-react';
 
 interface TeamViewProps {
@@ -28,60 +30,77 @@ export const TeamView: React.FC<TeamViewProps> = ({
             <span>Pre-Service Language Educator Research Team</span>
           </div>
           <h2 className="text-2xl font-bold text-slate-900 tracking-tight">
-            Student Interviewers & Authors of the Study
+            Student Researchers & Authors of the Study
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Fieldwork investigation conducted as part of the <strong>{metadata.program}</strong> at <strong>{metadata.university}</strong> (Bogotá, Colombia). This exploratory study connects pedagogical training with the authentic academic and vocational realities of students across faculties.
+            Fieldwork investigation conducted by student researchers <strong>Alejandra Cruz</strong> and <strong>Melany Casas</strong> as part of the <strong>{metadata.program}</strong> at <strong>{metadata.university}</strong> (Bogotá, Colombia). This exploratory study connects pedagogical training with the authentic academic and vocational realities of students across faculties.
           </p>
         </div>
       </div>
 
       {/* Team Members Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {interviewers.map((member) => (
-          <div
-            key={member.id}
-            className="bg-white rounded-xl p-5 border border-slate-200 shadow-xs flex flex-col justify-between hover:border-slate-300 transition-all"
-          >
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-slate-900 text-amber-400 font-bold text-base flex items-center justify-center shrink-0 shadow-xs">
-                  {member.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-slate-900 leading-tight">
-                    {member.name}
-                  </h3>
-                  <span className="text-xs font-medium text-amber-700 block">
-                    {member.role}
-                  </span>
-                  <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-0.5">
-                    <MapPin className="w-3 h-3 text-slate-400" />
-                    <span>{member.campus}</span>
-                    <span aria-hidden="true">·</span>
-                    <span>{member.semester}</span>
+        {interviewers.map((member) => {
+          const isLead = member.name.includes('Alejandra Cruz') || member.name.includes('Melany Casas');
+
+          return (
+            <div
+              key={member.id}
+              className={`bg-white rounded-xl p-5 border shadow-xs flex flex-col justify-between transition-all ${
+                isLead
+                  ? 'border-amber-400 ring-2 ring-amber-400/30'
+                  : 'border-slate-200 hover:border-slate-300'
+              }`}
+            >
+              <div className="space-y-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-slate-900 text-amber-400 font-bold text-base flex items-center justify-center shrink-0 shadow-xs">
+                      {member.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-bold text-slate-900 leading-tight">
+                        {member.name}
+                      </h3>
+                      <span className="text-xs font-medium text-amber-700 block">
+                        {member.role}
+                      </span>
+                      <div className="flex items-center gap-1.5 text-[11px] text-slate-500 mt-0.5">
+                        <MapPin className="w-3 h-3 text-slate-400" />
+                        <span>{member.campus}</span>
+                        <span aria-hidden="true">·</span>
+                        <span>{member.semester}</span>
+                      </div>
+                    </div>
                   </div>
+
+                  {isLead && (
+                    <span className="bg-amber-100 text-amber-900 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-300 shrink-0 flex items-center gap-1">
+                      <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                      <span>Lead Author</span>
+                    </span>
+                  )}
+                </div>
+
+                {/* Reflection */}
+                <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200/80 text-xs text-slate-700 space-y-1">
+                  <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-900">
+                    <Quote className="w-3 h-3 text-amber-600" />
+                    <span>Pedagogical & Fieldwork Reflection:</span>
+                  </div>
+                  <p className="italic text-slate-600 leading-relaxed text-[11px]">
+                    "{member.reflection}"
+                  </p>
                 </div>
               </div>
 
-              {/* Reflection */}
-              <div className="bg-slate-50 rounded-lg p-3.5 border border-slate-200/80 text-xs text-slate-700 space-y-1">
-                <div className="flex items-center gap-1 text-[11px] font-semibold text-slate-900">
-                  <Quote className="w-3 h-3 text-amber-600" />
-                  <span>Pedagogical & Fieldwork Reflection:</span>
-                </div>
-                <p className="italic text-slate-600 leading-relaxed text-[11px]">
-                  "{member.reflection}"
-                </p>
+              <div className="pt-3 mt-4 border-t border-slate-100 flex items-center gap-1 text-xs text-slate-500">
+                <Mail className="w-3.5 h-3.5 text-slate-400" />
+                <span className="truncate">{member.email}</span>
               </div>
             </div>
-
-            <div className="pt-3 mt-4 border-t border-slate-100 flex items-center gap-1 text-xs text-slate-500">
-              <Mail className="w-3.5 h-3.5 text-slate-400" />
-              <span className="truncate">{member.email}</span>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Fieldwork Protocol & Methodology */}
@@ -99,44 +118,41 @@ export const TeamView: React.FC<TeamViewProps> = ({
             <div className="space-y-1">
               <span className="font-semibold text-slate-900 block">1. Research Instrument Design:</span>
               <p className="text-slate-600 leading-relaxed">
-                An 11-question semi-structured English battery was formulated to encompass vocational motivation, curricular preferences, campus welfare (Ugus mascot), student challenges, practicums, teaching aspirations, and international mobility.
+                8 standardized questions designed to explore vocational motivation, course satisfaction, spatial attachment, internship realities (RCN/Caracol), mascot care, and internationalization.
               </p>
             </div>
+
             <div className="space-y-1">
-              <span className="font-semibold text-slate-900 block">2. Sample Diversity Criteria:</span>
+              <span className="font-semibold text-slate-900 block">2. Fieldwork Execution:</span>
               <p className="text-slate-600 leading-relaxed">
-                Intentional convenience sampling: 1 representative student from 9 distinct degree programs at UniAgustiniana (Architecture, Social Communication, International Business, Foreign Languages, Gastronomy, Law, Film, Engineering, Marketing).
-              </p>
-            </div>
-            <div className="space-y-1">
-              <span className="font-semibold text-slate-900 block">3. Data Recording & Transcription:</span>
-              <p className="text-slate-600 leading-relaxed">
-                Interviews conducted with verbal informed consent, audio recordings for transcription fidelity, and systematic cross-disciplinary qualitative coding.
+                Interviews conducted on Campus Tagaste, UniAgustiniana, with student consent, verbatim transcription, and qualitative assessment of communicative English proficiency.
               </p>
             </div>
           </div>
         </div>
 
-        {/* Pedagogical Contribution */}
+        {/* Supervision & Ethical Safeguards */}
         <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
           <div className="flex items-center gap-2 border-b border-slate-100 pb-3">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
             <h3 className="font-bold text-slate-900 text-sm">
-              Impact on Foreign Language Teacher Training
+              Academic Supervision & Data Ethics
             </h3>
           </div>
 
           <div className="space-y-3 text-xs text-slate-700">
-            <div className="bg-emerald-50/60 p-3 rounded-lg border border-emerald-200 text-emerald-950 leading-relaxed">
-              <strong>English for Specific Purposes (ESP):</strong> As future language teachers, this project proves that students from Gastronomy or Architecture require specialized linguistic registers and situated communicative tasks rather than generic grammar worksheets.
+            <div className="space-y-1">
+              <span className="font-semibold text-slate-900 block">Academic Integrity:</span>
+              <p className="text-slate-600 leading-relaxed">
+                Conducted within the curricular framework of the Bachelor’s Degree in Foreign Languages at Universitaria Agustiniana. All responses represent authentic, unedited student testimonies.
+              </p>
             </div>
 
-            <div className="bg-amber-50/60 p-3 rounded-lg border border-amber-200 text-amber-950 leading-relaxed">
-              <strong>Empathy and Campus Culture:</strong> The universal affection for Ugus and the shared struggle with sleep deprivation and Bogotá commuting remind educators to build compassionate, low-anxiety classroom spaces.
-            </div>
-
-            <div className="bg-blue-50/60 p-3 rounded-lg border border-blue-200 text-blue-950 leading-relaxed">
-              <strong>Student Empowerment:</strong> Giving non-language majors the space to speak English while talking about their true passions created genuine communicative motivation.
+            <div className="space-y-1">
+              <span className="font-semibold text-slate-900 block">Student Codes & Institutional Archiving:</span>
+              <p className="text-slate-600 leading-relaxed">
+                Participant records include verified institutional IDs for academic reproducibility and defense before the evaluation committee.
+              </p>
             </div>
           </div>
         </div>

@@ -380,7 +380,12 @@ export const QuestionDetailView: React.FC<QuestionDetailViewProps> = ({
                       {studentA.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-900">{studentA.name}</h4>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="text-xs font-bold text-slate-900">{studentA.name}</h4>
+                        <span className="font-mono text-[10px] text-amber-900 bg-amber-50 px-1 rounded border border-amber-200 font-bold">
+                          ID: {studentA.studentCode}
+                        </span>
+                      </div>
                       <p className="text-[11px] text-slate-500">{studentA.career} · {studentA.campus}</p>
                     </div>
                   </div>
@@ -430,7 +435,12 @@ export const QuestionDetailView: React.FC<QuestionDetailViewProps> = ({
                       {studentB.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-900">{studentB.name}</h4>
+                      <div className="flex items-center gap-1.5">
+                        <h4 className="text-xs font-bold text-slate-900">{studentB.name}</h4>
+                        <span className="font-mono text-[10px] text-amber-900 bg-amber-50 px-1 rounded border border-amber-200 font-bold">
+                          ID: {studentB.studentCode}
+                        </span>
+                      </div>
                       <p className="text-[11px] text-slate-500">{studentB.career} · {studentB.campus}</p>
                     </div>
                   </div>
@@ -488,9 +498,14 @@ export const QuestionDetailView: React.FC<QuestionDetailViewProps> = ({
                           <h4 className="text-xs font-bold text-slate-900">
                             {student.name}
                           </h4>
-                          <p className="text-[11px] font-medium text-amber-800 line-clamp-1">
-                            {student.career}
-                          </p>
+                          <div className="flex items-center gap-1.5 mt-0.5">
+                            <span className="font-mono text-[10px] text-amber-900 bg-amber-50 px-1 py-0.2 rounded border border-amber-200 font-bold">
+                              ID: {student.studentCode}
+                            </span>
+                            <span className="text-[11px] font-medium text-slate-600 truncate max-w-[120px]">
+                              {student.career.split(' (')[0]}
+                            </span>
+                          </div>
                         </div>
                       </div>
 
@@ -516,7 +531,7 @@ export const QuestionDetailView: React.FC<QuestionDetailViewProps> = ({
                       onClick={() => onSelectStudent(student.id)}
                       className="text-amber-700 font-medium hover:text-amber-900 transition-colors text-xs flex items-center gap-1"
                     >
-                      <span>All 11 answers</span>
+                      <span>All {questions.length} answers</span>
                       <ChevronRight className="w-3.5 h-3.5" />
                     </button>
                   </div>

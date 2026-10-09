@@ -22,6 +22,7 @@ export interface Question {
 export interface InterviewedStudent {
   id: string;
   name: string;
+  studentCode: string;
   career: string;
   faculty: string;
   semester: string;
