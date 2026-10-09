@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { InterviewedStudent, Question } from '../types';
+import { careerProgramsRegistry } from '../data/initialData';
 import { 
   ChevronLeft, 
   ChevronRight, 
@@ -11,7 +12,9 @@ import {
   ArrowRight,
   Sparkles,
   Hash,
-  Award
+  Award,
+  ChefHat,
+  GraduationCap
 } from 'lucide-react';
 
 interface StudentProfileViewProps {
@@ -30,9 +33,22 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
   onSelectQuestion
 }) => {
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
+  const [careerFilter, setCareerFilter] = useState<'all' | 'film' | 'architecture' | 'engineering' | 'tourism' | 'gastronomy'>('all');
 
   const currentStudent = students.find((s) => s.id === selectedStudentId) || students[0];
   const currentIndex = students.findIndex((s) => s.id === selectedStudentId);
+
+  const displayStudents = students.filter((s) => {
+    if (careerFilter === 'film') return s.career.includes('Cine');
+    if (careerFilter === 'architecture') return s.career.includes('Arquitectura');
+    if (careerFilter === 'engineering') return s.career.includes('Ingenier');
+    if (careerFilter === 'tourism') return s.career.includes('Hotelería') || s.career.includes('Hospitality');
+    if (careerFilter === 'gastronomy') return s.career.includes('Gastronom');
+    return true;
+  });
+
+  const programData = currentStudent ? careerProgramsRegistry[currentStudent.career] : null;
+  const studentQuestions = programData?.questions || questions;
 
   const handlePrev = () => {
     if (currentIndex > 0) {
@@ -59,14 +75,80 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
   return (
     <div className="space-y-6 pb-12">
       {/* Students Horizontal Selector Bar */}
-      <div className="bg-white rounded-xl p-3 border border-slate-200 shadow-xs">
-        <div className="flex items-center justify-between text-xs text-slate-500 mb-2 px-1">
-          <span className="font-semibold text-slate-700">Select Interviewed Student:</span>
-          <span>{currentIndex + 1} of {students.length} students</span>
+      <div className="bg-white rounded-xl p-3 border border-slate-200 shadow-xs space-y-2.5">
+        <div className="flex flex-wrap items-center justify-between text-xs text-slate-500 px-1 gap-2">
+          <div className="flex items-center gap-2">
+            <span className="font-semibold text-slate-700">Interviewed Students ({students.length} Total):</span>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setCareerFilter('all')}
+                className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
+                  careerFilter === 'all'
+                    ? 'bg-slate-900 text-amber-400 font-bold'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                All ({students.length})
+              </button>
+              <button
+                onClick={() => setCareerFilter('film')}
+                className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
+                  careerFilter === 'film'
+                    ? 'bg-slate-900 text-amber-400 font-bold'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                Film &amp; TV (8)
+              </button>
+              <button
+                onClick={() => setCareerFilter('architecture')}
+                className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
+                  careerFilter === 'architecture'
+                    ? 'bg-slate-900 text-amber-400 font-bold'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                Architecture (8)
+              </button>
+              <button
+                onClick={() => setCareerFilter('engineering')}
+                className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
+                  careerFilter === 'engineering'
+                    ? 'bg-slate-900 text-amber-400 font-bold'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                Engineering (8)
+              </button>
+              <button
+                onClick={() => setCareerFilter('tourism')}
+                className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors ${
+                  careerFilter === 'tourism'
+                    ? 'bg-slate-900 text-amber-400 font-bold'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                Tourism (8)
+              </button>
+              <button
+                onClick={() => setCareerFilter('gastronomy')}
+                className={`px-2 py-0.5 rounded text-[11px] font-medium transition-colors flex items-center gap-1 ${
+                  careerFilter === 'gastronomy'
+                    ? 'bg-slate-900 text-amber-400 font-bold'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                }`}
+              >
+                <span>Gastronomy (10)</span>
+              </button>
+            </div>
+          </div>
+          <span>Student {currentIndex + 1} of {students.length}</span>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2">
-          {students.map((student) => {
+          {displayStudents.map((student) => {
             const isSelected = student.id === selectedStudentId;
+            const isTeacher = student.isTeacher || student.studentCode === 'DOCENTE';
+
             return (
               <button
                 key={student.id}
@@ -74,9 +156,11 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                   onSelectStudentId(student.id);
                   setIsPlayingAudio(false);
                 }}
-                className={`p-2.5 rounded-lg text-left transition-all flex flex-col justify-between border ${
+                className={`p-2.5 rounded-lg text-left transition-all flex flex-col justify-between border relative ${
                   isSelected
                     ? 'bg-slate-900 text-white border-slate-900 shadow-xs ring-2 ring-amber-400'
+                    : isTeacher
+                    ? 'bg-amber-50 hover:bg-amber-100/80 text-slate-900 border-amber-300 ring-1 ring-amber-400/40'
                     : 'bg-slate-50 hover:bg-slate-100 text-slate-700 border-slate-200/60'
                 }`}
               >
@@ -86,16 +170,20 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                   >
                     {student.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
                   </div>
-                  <span className={`text-[10px] font-mono font-bold ${isSelected ? 'text-amber-300' : 'text-slate-600'}`}>
-                    {student.studentCode}
+                  <span className={`text-[10px] font-mono font-bold ${
+                    isTeacher
+                      ? 'bg-amber-400 text-slate-950 px-1 py-0.2 rounded font-black'
+                      : isSelected ? 'text-amber-300' : 'text-slate-600'
+                  }`}>
+                    {isTeacher ? 'DOCENTE' : student.studentCode}
                   </span>
                 </div>
                 <div className="min-w-0">
                   <span className={`block text-xs font-bold truncate leading-tight ${isSelected ? 'text-white' : 'text-slate-900'}`}>
                     {student.name}
                   </span>
-                  <span className={`block text-[10px] truncate ${isSelected ? 'text-slate-300' : 'text-slate-500'}`}>
-                    {student.perceivedEnglishLevel.split(' - ')[0]} · {student.semester}
+                  <span className={`block text-[10px] truncate ${isSelected ? 'text-slate-300' : isTeacher ? 'text-amber-800 font-semibold' : 'text-slate-500'}`}>
+                    {isTeacher ? 'Docente' : `${student.perceivedEnglishLevel.split(' - ')[0]} · ${student.semester}`}
                   </span>
                 </div>
               </button>
@@ -117,6 +205,13 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
               </div>
 
               <div className="space-y-1.5">
+                {currentStudent.isTeacher && (
+                  <div className="inline-flex items-center gap-1.5 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-black text-xs px-2.5 py-0.5 rounded-md shadow-sm uppercase tracking-wider">
+                    <ChefHat className="w-3.5 h-3.5" />
+                    <span>DOCENTE DESTACADA · PERSPECTIVA PROFESORAL</span>
+                  </div>
+                )}
+
                 <div className="flex flex-wrap items-center gap-2 text-xs text-amber-300">
                   <span className="font-semibold">{currentStudent.faculty}</span>
                   <span aria-hidden="true">·</span>
@@ -131,8 +226,17 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
                     {currentStudent.name}
                   </h2>
                   <div className="inline-flex items-center gap-1.5 bg-amber-400 text-slate-950 font-mono text-xs px-2.5 py-1 rounded-md font-bold shadow-xs">
-                    <Hash className="w-3.5 h-3.5" />
-                    <span>Student ID: {currentStudent.studentCode}</span>
+                    {currentStudent.isTeacher ? (
+                      <>
+                        <ChefHat className="w-3.5 h-3.5" />
+                        <span className="font-sans font-black">ROL: DOCENTE TITULAR</span>
+                      </>
+                    ) : (
+                      <>
+                        <Hash className="w-3.5 h-3.5" />
+                        <span>Student ID: {currentStudent.studentCode}</span>
+                      </>
+                    )}
                   </div>
                 </div>
 
@@ -215,7 +319,7 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
           <Quote className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
           <div>
             <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-800 block mb-0.5">
-              Highlight Quote from Fieldwork Interview:
+              {currentStudent.isTeacher ? 'Perspectiva Pedagógica & Reflexión Docente:' : 'Highlight Quote from Fieldwork Interview:'}
             </span>
             <p className="text-sm font-medium text-slate-800 italic leading-relaxed">
               "{currentStudent.highlightQuote}"
@@ -228,19 +332,19 @@ export const StudentProfileView: React.FC<StudentProfileViewProps> = ({
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
             <div>
               <h3 className="text-base font-bold text-slate-900">
-                Complete Fieldwork Interview Dossier ({questions.length} Questions)
+                Complete Fieldwork Interview Dossier ({studentQuestions.length} Questions)
               </h3>
               <p className="text-xs text-slate-500">
                 Faithful transcription and categorization of answers provided by {currentStudent.name} (ID: {currentStudent.studentCode})
               </p>
             </div>
             <span className="text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded">
-              {questions.length} of {questions.length} questions completed
+              {studentQuestions.length} of {studentQuestions.length} questions completed
             </span>
           </div>
 
           <div className="space-y-4">
-            {questions.map((question) => {
+            {studentQuestions.map((question) => {
               const answer = currentStudent.answers[question.id] || 'Answer not recorded.';
               return (
                 <div

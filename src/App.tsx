@@ -22,24 +22,24 @@ import { DataManagementView } from './components/DataManagementView';
 import { PrintReportView } from './components/PrintReportView';
 
 export default function App() {
-  // Load data from localStorage (v5 key ensures fresh verified Film & TV dataset with student codes)
+  // Load data from localStorage (v9 key ensures fresh verified Film & TV + Architecture + Engineering + Hospitality & Tourism + Gastronomy dataset with student codes and Docente)
   const [metadata, setMetadata] = useState<ProjectMetadata>(() => {
-    const saved = localStorage.getItem('uniagustiniana_meta_v5');
+    const saved = localStorage.getItem('uniagustiniana_meta_v9');
     return saved ? JSON.parse(saved) : initialMetadata;
   });
 
   const [questions, setQuestions] = useState<Question[]>(() => {
-    const saved = localStorage.getItem('uniagustiniana_questions_v5');
+    const saved = localStorage.getItem('uniagustiniana_questions_v9');
     return saved ? JSON.parse(saved) : initialQuestions;
   });
 
   const [students, setStudents] = useState<InterviewedStudent[]>(() => {
-    const saved = localStorage.getItem('uniagustiniana_students_v5');
+    const saved = localStorage.getItem('uniagustiniana_students_v9');
     return saved ? JSON.parse(saved) : initialStudents;
   });
 
   const [interviewers, setInterviewers] = useState<Interviewer[]>(() => {
-    const saved = localStorage.getItem('uniagustiniana_interviewers_v5');
+    const saved = localStorage.getItem('uniagustiniana_interviewers_v9');
     return saved ? JSON.parse(saved) : initialInterviewers;
   });
 
@@ -61,10 +61,10 @@ export default function App() {
     setStudents(newStudents);
     setInterviewers(newInterviewers);
 
-    localStorage.setItem('uniagustiniana_meta_v5', JSON.stringify(newMetadata));
-    localStorage.setItem('uniagustiniana_questions_v5', JSON.stringify(newQuestions));
-    localStorage.setItem('uniagustiniana_students_v5', JSON.stringify(newStudents));
-    localStorage.setItem('uniagustiniana_interviewers_v5', JSON.stringify(newInterviewers));
+    localStorage.setItem('uniagustiniana_meta_v9', JSON.stringify(newMetadata));
+    localStorage.setItem('uniagustiniana_questions_v9', JSON.stringify(newQuestions));
+    localStorage.setItem('uniagustiniana_students_v9', JSON.stringify(newStudents));
+    localStorage.setItem('uniagustiniana_interviewers_v9', JSON.stringify(newInterviewers));
   };
 
   const handleResetData = () => {
@@ -74,18 +74,18 @@ export default function App() {
       setStudents(initialStudents);
       setInterviewers(initialInterviewers);
 
-      localStorage.removeItem('uniagustiniana_meta_v5');
-      localStorage.removeItem('uniagustiniana_questions_v5');
-      localStorage.removeItem('uniagustiniana_students_v5');
-      localStorage.removeItem('uniagustiniana_interviewers_v5');
+      localStorage.removeItem('uniagustiniana_meta_v9');
+      localStorage.removeItem('uniagustiniana_questions_v9');
+      localStorage.removeItem('uniagustiniana_students_v9');
+      localStorage.removeItem('uniagustiniana_interviewers_v9');
     }
   };
 
-  // Add new student to specific career (max 8 per career constraint)
+  // Add new student to specific career
   const handleAddNewStudentToCareer = (targetCareer: string) => {
     const currentCount = students.filter((s) => s.career === targetCareer).length;
-    if (currentCount >= 8) {
-      alert(`The program "${targetCareer}" has reached the maximum quota of 8 interviewed students.`);
+    if (currentCount >= 12) {
+      alert(`The program "${targetCareer}" has reached the maximum quota of interviewed participants.`);
       return;
     }
 
@@ -290,7 +290,7 @@ export default function App() {
           <div className="flex flex-wrap items-center justify-center gap-4 text-slate-400">
             <span>{universityCareersList.length} University Majors</span>
             <span aria-hidden="true">·</span>
-            <span>{students.length} Verified Interviewees (Film & TV Cohort)</span>
+            <span>{students.length} Verified Interviewees (Film, Arch &amp; Eng)</span>
             <span aria-hidden="true">·</span>
             <span>{questions.length} Structured Questions</span>
             <span aria-hidden="true">·</span>

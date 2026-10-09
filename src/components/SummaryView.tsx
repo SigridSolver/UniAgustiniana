@@ -143,7 +143,7 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
         )}
       </section>
 
-      {/* Cine y Televisión Video & Cohort Showcase Banner */}
+      {/* Multi-Program Video & Cohort Showcase Banner */}
       {onGoToCareers && (
         <section className="bg-slate-900 text-white rounded-xl p-5 border border-slate-800 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-start gap-3">
@@ -153,15 +153,15 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-[10px] font-black uppercase tracking-wider text-amber-400 bg-amber-400/20 px-2 py-0.5 rounded border border-amber-400/30">
-                  Embedded Video &amp; Evidence Available
+                  Program Presentation Videos Available
                 </span>
-                <span className="text-slate-400 text-[11px]">· Film &amp; Television Tab</span>
+                <span className="text-slate-400 text-[11px]">· Film &amp; TV · Architecture · Engineering · Hospitality &amp; Tourism</span>
               </div>
               <h4 className="text-sm font-bold text-white mt-0.5">
-                Film and Television Program — Agustiniana University
+                Film &amp; Television, Architecture, Engineering &amp; Tourism Programs — UniAgustiniana
               </h4>
               <p className="text-xs text-slate-300 leading-relaxed mt-0.5">
-                Institutional video presentation and verified fieldwork evidence log with the 8 interviewed students embedded directly inside the career tab.
+                Institutional presentation videos embedded inside their respective career tabs, accompanied by verified 8-student fieldwork cohorts and research team credits (Valerin Sophia Conde Hernández &amp; Tania Sarah Candela Ruiz for Hospitality &amp; Tourism).
               </p>
             </div>
           </div>
@@ -171,7 +171,7 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
             className="flex items-center gap-2 px-4 py-2 text-xs font-bold text-slate-950 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-xs transition-colors shrink-0"
           >
             <Play className="w-3.5 h-3.5 fill-current" />
-            <span>View Video &amp; Evidence in Film &amp; TV Tab</span>
+            <span>Explore Programs in Careers Tab</span>
           </button>
         </section>
       )}
@@ -369,13 +369,13 @@ export const SummaryView: React.FC<SummaryViewProps> = ({
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <div className="flex items-center gap-2">
-              <Clapperboard className="w-5 h-5 text-amber-600" />
+              <Users className="w-5 h-5 text-amber-600" />
               <h3 className="text-lg font-bold text-slate-900 tracking-tight">
-                Surveyed Students in Film and Television (8 Real Students)
+                Verified Surveyed Cohorts ({students.length} Real Students)
               </h3>
             </div>
             <p className="text-xs text-slate-500">
-              Official sample with student codes and transcribed responses across all 8 questions
+              Official cohorts with student codes and transcribed responses across degree programs
             </p>
           </div>
           {onGoToCareers && (

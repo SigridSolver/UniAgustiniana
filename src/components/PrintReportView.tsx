@@ -96,10 +96,10 @@ export const PrintReportView: React.FC<PrintReportViewProps> = ({
               <strong>General Objective:</strong> {metadata.generalObjective}
             </p>
             <p>
-              <strong>Methodology & Instrument:</strong> {metadata.methodologyType} ({questions.length} questions applied to {students.length} students in Film and Television).
+              <strong>Methodology & Instrument:</strong> {metadata.methodologyType} (standardized question protocols applied to {students.length} students across Film &amp; Television and Architecture).
             </p>
             <p>
-              <strong>Lead Student Investigators:</strong> Alejandra Cruz & Melany Casas (Bachelor’s Degree in Foreign Languages).
+              <strong>Research Teams:</strong> Alejandra Cruz &amp; Melany Casas (Film &amp; TV) · María Fernanda Rodríguez &amp; Helen Sofía Molina (Architecture) — Foreign Languages Degree.
             </p>
           </div>
 

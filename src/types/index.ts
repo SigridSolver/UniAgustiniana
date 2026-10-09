@@ -33,6 +33,8 @@ export interface InterviewedStudent {
   answers: { [questionId: number]: string };
   audioTime?: string;
   avatarColor: string;
+  isTeacher?: boolean;
+  role?: string;
 }
 
 export interface ProjectMetadata {

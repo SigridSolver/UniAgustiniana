@@ -7,8 +7,13 @@ import {
   X, 
   FileSpreadsheet, 
   ExternalLink,
-  Hash
+  Hash,
+  Clapperboard,
+  Compass,
+  Cpu,
+  Layers
 } from 'lucide-react';
+import { careerProgramsRegistry } from '../data/initialData';
 
 interface FullMatrixViewProps {
   questions: Question[];
@@ -24,17 +29,26 @@ export const FullMatrixView: React.FC<FullMatrixViewProps> = ({
   onSelectQuestion
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCareerMatrix, setSelectedCareerMatrix] = useState<string>('all');
   const [activeCell, setActiveCell] = useState<{
     question: Question;
     student: InterviewedStudent;
     answer: string;
   } | null>(null);
 
+  const filteredStudents = selectedCareerMatrix === 'all'
+    ? students
+    : students.filter((s) => s.career === selectedCareerMatrix);
+
+  const displayQuestions = (selectedCareerMatrix !== 'all' && careerProgramsRegistry[selectedCareerMatrix]?.questions)
+    ? careerProgramsRegistry[selectedCareerMatrix].questions
+    : questions;
+
   // Export to CSV function including student code
   const handleExportCSV = () => {
-    const headers = ['Code', 'Question', 'Category', ...students.map((s) => `"${s.name} (Code: ${s.studentCode} - ${s.career})"` )];
-    const rows = questions.map((q) => {
-      const answers = students.map((s) => `"${(s.answers[q.id] || '').replace(/"/g, '""')}"`);
+    const headers = ['Code', 'Question', 'Category', ...filteredStudents.map((s) => `"${s.name} (Code: ${s.studentCode} - ${s.career})"` )];
+    const rows = displayQuestions.map((q) => {
+      const answers = filteredStudents.map((s) => `"${(s.answers[q.id] || '').replace(/"/g, '""')}"`);
       return [`"${q.code}"`, `"${q.title.replace(/"/g, '""')}"`, `"${q.category}"`, ...answers].join(',');
     });
 
@@ -42,7 +56,7 @@ export const FullMatrixView: React.FC<FullMatrixViewProps> = ({
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `UniAgustiniana_CineTV_Fieldwork_Research_Matrix.csv`);
+    link.setAttribute('download', `UniAgustiniana_Fieldwork_Research_Matrix.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -55,10 +69,10 @@ export const FullMatrixView: React.FC<FullMatrixViewProps> = ({
         <div>
           <h2 className="text-base font-bold text-slate-900 flex items-center gap-2">
             <Table2 className="w-5 h-5 text-amber-600" />
-            <span>Cross-Data Matrix: {questions.length} Questions × {students.length} Students</span>
+            <span>Cross-Data Matrix: {displayQuestions.length} Questions × {filteredStudents.length} Students</span>
           </h2>
           <p className="text-xs text-slate-500">
-            Panoramic spreadsheet of all {questions.length * students.length} recorded fieldwork answers with student codes
+            Panoramic spreadsheet of all {displayQuestions.length * filteredStudents.length} recorded fieldwork answers with student codes
           </p>
         </div>
 
@@ -77,12 +91,61 @@ export const FullMatrixView: React.FC<FullMatrixViewProps> = ({
           <button
             onClick={handleExportCSV}
             className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-lg transition-colors border border-slate-200"
-            title="Download full matrix as Excel (.csv)"
+            title="Download matrix as Excel (.csv)"
           >
             <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-600" />
             <span>Export CSV</span>
           </button>
         </div>
+      </div>
+
+      {/* Program Cohort Filter Tabs */}
+      <div className="flex flex-wrap items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200 shadow-xs">
+        <span className="text-xs font-semibold text-slate-700 px-1">Cohort Matrix View:</span>
+        <button
+          onClick={() => setSelectedCareerMatrix('all')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+            selectedCareerMatrix === 'all'
+              ? 'bg-slate-900 text-amber-400 shadow-xs ring-1 ring-amber-400'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`}
+        >
+          <Layers className="w-3.5 h-3.5" />
+          <span>All Programs ({students.length})</span>
+        </button>
+        <button
+          onClick={() => setSelectedCareerMatrix('Film and Television (Cine y Televisión)')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+            selectedCareerMatrix === 'Film and Television (Cine y Televisión)'
+              ? 'bg-slate-900 text-amber-400 shadow-xs ring-1 ring-amber-400'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`}
+        >
+          <Clapperboard className="w-3.5 h-3.5" />
+          <span>Film &amp; Television (8)</span>
+        </button>
+        <button
+          onClick={() => setSelectedCareerMatrix('Architecture (Arquitectura)')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+            selectedCareerMatrix === 'Architecture (Arquitectura)'
+              ? 'bg-slate-900 text-amber-400 shadow-xs ring-1 ring-amber-400'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`}
+        >
+          <Compass className="w-3.5 h-3.5" />
+          <span>Architecture (8)</span>
+        </button>
+        <button
+          onClick={() => setSelectedCareerMatrix('Engineering (Ingenierías)')}
+          className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center gap-1.5 ${
+            selectedCareerMatrix === 'Engineering (Ingenierías)'
+              ? 'bg-slate-900 text-amber-400 shadow-xs ring-1 ring-amber-400'
+              : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+          }`}
+        >
+          <Cpu className="w-3.5 h-3.5" />
+          <span>Engineering (8)</span>
+        </button>
       </div>
 
       {/* Cross Table Container */}
@@ -94,7 +157,7 @@ export const FullMatrixView: React.FC<FullMatrixViewProps> = ({
                 <th className="p-3.5 font-bold uppercase tracking-wider text-[11px] w-64 min-w-[240px] border-r border-slate-800">
                   Research Question
                 </th>
-                {students.map((student) => (
+                {filteredStudents.map((student) => (
                   <th
                     key={student.id}
                     className="p-3 font-semibold text-[11px] min-w-[220px] border-r border-slate-800 last:border-r-0 hover:bg-slate-800 transition-colors cursor-pointer"
@@ -121,7 +184,7 @@ export const FullMatrixView: React.FC<FullMatrixViewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-200 text-slate-700">
-              {questions.map((question, qIdx) => {
+              {displayQuestions.map((question, qIdx) => {
                 const isEven = qIdx % 2 === 0;
                 return (
                   <tr
@@ -153,7 +216,7 @@ export const FullMatrixView: React.FC<FullMatrixViewProps> = ({
                     </td>
 
                     {/* Answers for each student */}
-                    {students.map((student) => {
+                    {filteredStudents.map((student) => {
                       const answer = student.answers[question.id] || 'No answer recorded.';
                       const isHighlighted =
                         searchQuery.trim().length > 1 &&

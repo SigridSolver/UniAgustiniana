@@ -14,20 +14,20 @@ import {
   ChevronRight,
   Hash,
   Clapperboard,
+  Compass,
+  Cpu,
+  Code2,
   Camera,
   Tv,
   Film,
   Play,
   ExternalLink,
-  FileCheck,
-  ZoomIn,
-  X,
-  Maximize2,
-  FileText,
-  Upload,
-  ShieldCheck
+  Palmtree,
+  Hotel,
+  UtensilsCrossed,
+  ChefHat
 } from 'lucide-react';
-import { universityCareersList } from '../data/initialData';
+import { universityCareersList, careerProgramsRegistry } from '../data/initialData';
 
 interface CareersViewProps {
   students: InterviewedStudent[];
@@ -46,7 +46,7 @@ export const CareersView: React.FC<CareersViewProps> = ({
   onSelectQuestion,
   onAddNewStudentToCareer
 }) => {
-  // Use all 10 university careers
+  // Use all university careers
   const sortedCareers = universityCareersList;
 
   const [activeCareer, setActiveCareer] = useState<string>(
@@ -56,6 +56,18 @@ export const CareersView: React.FC<CareersViewProps> = ({
   );
 
   const [activeStudentId, setActiveStudentId] = useState<string>('');
+
+  // Lookup program configuration
+  const programData = careerProgramsRegistry[activeCareer];
+  const careerQuestions = programData?.questions || questions;
+  const careerVideo = programData?.video || null;
+  const careerHighlights = programData?.highlights || null;
+
+  const isCine = activeCareer.includes('Cine');
+  const isArch = activeCareer.includes('Arquitectura');
+  const isEng = activeCareer.includes('Ingenier');
+  const isTour = activeCareer.includes('Hotelería') || activeCareer.includes('Hospitality');
+  const isGastro = activeCareer.includes('Gastronom');
 
   // Filter students belonging to active career
   const careerStudents = students.filter((s) => s.career === activeCareer);
@@ -77,10 +89,6 @@ export const CareersView: React.FC<CareersViewProps> = ({
   });
 
   const canAddMore = careerStudents.length < 8;
-  const isCineTV = activeCareer.includes('Cine');
-  const [isEvidenceModalOpen, setIsEvidenceModalOpen] = useState<boolean>(false);
-  const [evidenceImageSrc, setEvidenceImageSrc] = useState<string>('/documentary-evidence-students.jpeg');
-  const [zoomLevel, setZoomLevel] = useState<number>(1);
 
   return (
     <div className="space-y-6 pb-12">
@@ -100,7 +108,13 @@ export const CareersView: React.FC<CareersViewProps> = ({
             const isSelected = career === activeCareer;
             const count = students.filter((s) => s.career === career).length;
             const shortName = career.split(' (')[0];
-            const isCine = career.includes('Cine');
+            const program = careerProgramsRegistry[career];
+            const hasVideo = !!program?.video;
+            const careerIsCine = career.includes('Cine');
+            const careerIsArch = career.includes('Arquitectura');
+            const careerIsEng = career.includes('Ingenier');
+            const careerIsTour = career.includes('Hotelería') || career.includes('Hospitality');
+            const careerIsGastro = career.includes('Gastronom');
 
             return (
               <button
@@ -115,9 +129,14 @@ export const CareersView: React.FC<CareersViewProps> = ({
                     : 'bg-slate-50 text-slate-700 hover:bg-slate-100 hover:text-slate-900 border-slate-200/70'
                 }`}
               >
-                {isCine && <Clapperboard className="w-3.5 h-3.5 text-amber-400" />}
+                {careerIsCine && <Clapperboard className="w-3.5 h-3.5 text-amber-400" />}
+                {careerIsArch && <Compass className="w-3.5 h-3.5 text-amber-400" />}
+                {careerIsEng && <Cpu className="w-3.5 h-3.5 text-amber-400" />}
+                {careerIsTour && <Palmtree className="w-3.5 h-3.5 text-amber-400" />}
+                {careerIsGastro && <UtensilsCrossed className="w-3.5 h-3.5 text-amber-400" />}
+                {!careerIsCine && !careerIsArch && !careerIsEng && !careerIsTour && !careerIsGastro && <GraduationCap className="w-3.5 h-3.5 text-slate-400" />}
                 <span>{shortName}</span>
-                {isCine && (
+                {hasVideo && (
                   <span className="text-[9px] bg-red-600 text-white font-extrabold px-1.5 py-0.5 rounded flex items-center gap-0.5 tracking-wider uppercase">
                     <Play className="w-2.5 h-2.5 fill-current" /> Video
                   </span>
@@ -127,7 +146,7 @@ export const CareersView: React.FC<CareersViewProps> = ({
                     isSelected ? 'bg-amber-400 text-slate-950' : count > 0 ? 'bg-slate-200 text-slate-800' : 'bg-slate-100 text-slate-400'
                   }`}
                 >
-                  {count}/8
+                  {count}
                 </span>
               </button>
             );
@@ -144,25 +163,30 @@ export const CareersView: React.FC<CareersViewProps> = ({
               <span>UniAgustiniana Academic Major</span>
               <span className="text-slate-400">·</span>
               <span className="text-slate-500 font-normal">
-                {careerStudents[0]?.faculty || 'Faculty of Art, Communication and Culture'}
+                {programData?.faculty || careerStudents[0]?.faculty || 'Faculty of Economic and Administrative Sciences'}
               </span>
             </div>
             <h2 className="text-xl sm:text-2xl font-bold text-slate-900 flex items-center gap-2">
-              {isCineTV && <Clapperboard className="w-6 h-6 text-amber-600" />}
+              {isCine && <Clapperboard className="w-6 h-6 text-amber-600" />}
+              {isArch && <Compass className="w-6 h-6 text-amber-600" />}
+              {isEng && <Cpu className="w-6 h-6 text-amber-600" />}
+              {isTour && <Palmtree className="w-6 h-6 text-amber-600" />}
+              {isGastro && <UtensilsCrossed className="w-6 h-6 text-amber-600" />}
+              {!isCine && !isArch && !isEng && !isTour && !isGastro && <GraduationCap className="w-6 h-6 text-amber-600" />}
               <span>{activeCareer}</span>
             </h2>
             <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 mt-1">
               <span className="flex items-center gap-1 font-medium text-slate-700">
                 <Users className="w-3.5 h-3.5 text-amber-600" />
-                {careerStudents.length} of 8 max students interviewed
+                {careerStudents.length} {isGastro ? 'interviewees (9 Students + 1 Professor)' : 'students interviewed'}
               </span>
               <span className="text-slate-400">·</span>
-              <span>{careerStudents[0]?.campus || (activeCareer.includes('Gastronomía') ? 'Suba Campus' : 'Tagaste Campus')}</span>
+              <span>{programData?.campus || careerStudents[0]?.campus || (isGastro ? 'Suba Campus (Main Culinary Labs)' : 'Tagaste Campus')}</span>
               <span className="text-slate-400">·</span>
               <span className="font-semibold text-emerald-700">Academic Period 2026</span>
-              {isCineTV && (
+              {careerStudents.length >= 8 && (
                 <span className="bg-emerald-100 text-emerald-900 font-bold px-2 py-0.5 rounded text-[11px] border border-emerald-300">
-                  Verified Real Cohort: 8/8 Complete
+                  {isGastro ? 'Verified Cohort: 9 Students + 1 Docente Complete' : `Verified Real Cohort: ${careerStudents.length} Complete`}
                 </span>
               )}
             </div>
@@ -173,14 +197,14 @@ export const CareersView: React.FC<CareersViewProps> = ({
               <button
                 onClick={() => onAddNewStudentToCareer(activeCareer)}
                 className="flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-900 bg-amber-400 hover:bg-amber-300 rounded-lg shadow-xs transition-colors"
-                title="Add a new interviewed student to this major (max 8 per career)"
+                title="Add a new interviewed student to this major"
               >
                 <Plus className="w-4 h-4" />
-                <span>Add Student ({careerStudents.length}/8)</span>
+                <span>Add Participant</span>
               </button>
             ) : (
               <span className="text-xs font-semibold text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200">
-                Quota filled (8/8 students)
+                Cohort complete ({careerStudents.length} participants)
               </span>
             )}
           </div>
@@ -262,47 +286,39 @@ export const CareersView: React.FC<CareersViewProps> = ({
 
             <div className="my-1">
               <span className="text-sm font-bold text-slate-900 block">
-                {careerStudents[0]?.campus || (activeCareer.includes('Gastronomía') ? 'Suba Campus' : 'Tagaste Campus')}
+                {programData?.campus || careerStudents[0]?.campus || (activeCareer.includes('Gastronomía') ? 'Suba Campus' : 'Tagaste Campus')}
               </span>
               <span className="text-[11px] text-slate-500">UniAgustiniana · Bogotá D.C.</span>
             </div>
 
             <div className="text-[11px] text-slate-500 pt-1 border-t border-slate-200/60">
-              Questions applied: <strong>{questions.length} Items</strong>
+              Questions applied: <strong>{careerQuestions.length} Items</strong>
             </div>
           </div>
         </div>
 
-        {/* Survey Highlights for Cine y TV */}
-        {isCineTV && (
+        {/* Survey Highlights Banner (Configured for Film & TV, Architecture, and active programs) */}
+        {careerHighlights && (
           <div className="mt-4 p-4 rounded-xl bg-amber-50/70 border border-amber-200 space-y-2">
             <div className="flex items-center gap-2">
-              <Camera className="w-4 h-4 text-amber-700" />
+              {isCine && <Camera className="w-4 h-4 text-amber-700" />}
+              {isArch && <Compass className="w-4 h-4 text-amber-700" />}
+              {isEng && <Code2 className="w-4 h-4 text-amber-700" />}
+              {isTour && <Palmtree className="w-4 h-4 text-amber-700" />}
+              {isGastro && <UtensilsCrossed className="w-4 h-4 text-amber-700" />}
+              {!isCine && !isArch && !isEng && !isTour && !isGastro && <Sparkles className="w-4 h-4 text-amber-700" />}
               <span className="text-xs font-bold text-slate-900 uppercase tracking-wide">
-                Verified Fieldwork Highlights (8 Real Students Interviewed):
+                {careerHighlights.title}
               </span>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs">
-              <div className="bg-white p-2.5 rounded-lg border border-amber-200/60">
-                <span className="text-slate-500 text-[11px] block">Q1. Program Appeal:</span>
-                <span className="font-bold text-slate-900">Photography (63%)</span>
-                <span className="text-slate-500 text-[11px] block">Spaces (37%)</span>
-              </div>
-              <div className="bg-white p-2.5 rounded-lg border border-amber-200/60">
-                <span className="text-slate-500 text-[11px] block">Q3. Favorite Space:</span>
-                <span className="font-bold text-emerald-700">Green area (100%)</span>
-                <span className="text-slate-500 text-[11px] block">8 of 8 students</span>
-              </div>
-              <div className="bg-white p-2.5 rounded-lg border border-amber-200/60">
-                <span className="text-slate-500 text-[11px] block">Q4. Internships:</span>
-                <span className="font-bold text-slate-900">RCN & Caracol TV</span>
-                <span className="text-slate-500 text-[11px] block">100% agreement</span>
-              </div>
-              <div className="bg-white p-2.5 rounded-lg border border-amber-200/60">
-                <span className="text-slate-500 text-[11px] block">Q8. Practice Career:</span>
-                <span className="font-bold text-slate-900">TV, Film & Netflix (88%)</span>
-                <span className="text-slate-500 text-[11px] block">Canada (12%)</span>
-              </div>
+              {careerHighlights.cards.map((card, idx) => (
+                <div key={idx} className="bg-white p-2.5 rounded-lg border border-amber-200/60">
+                  <span className="text-slate-500 text-[11px] block">{card.label}</span>
+                  <span className={`font-bold ${card.highlightColor || 'text-slate-900'}`}>{card.primary}</span>
+                  <span className="text-slate-500 text-[11px] block">{card.secondary}</span>
+                </div>
+              ))}
             </div>
           </div>
         )}
@@ -316,7 +332,7 @@ export const CareersView: React.FC<CareersViewProps> = ({
             No Interviewed Students Recorded Yet for {activeCareer}
           </h3>
           <p className="text-xs text-slate-500 max-w-md mx-auto">
-            All fictitious placeholder students have been removed. The verified survey has been completed for Film and Television (8 students). You can register up to 8 real interviewees for this major using the button below.
+            All fictitious placeholder students have been removed. Verified surveys have been recorded for Film &amp; Television (8 students) and Architecture (8 students). You can register up to 8 real interviewees for this major using the button below.
           </p>
           <button
             onClick={() => onAddNewStudentToCareer(activeCareer)}
@@ -341,33 +357,51 @@ export const CareersView: React.FC<CareersViewProps> = ({
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {careerStudents.map((st) => {
               const isCurrent = currentStudent?.id === st.id;
+              const isTeacher = st.isTeacher || st.studentCode === 'DOCENTE';
+
               return (
                 <div
                   key={st.id}
                   onClick={() => setActiveStudentId(st.id)}
-                  className={`p-4 rounded-xl border text-left cursor-pointer transition-all shadow-xs flex flex-col justify-between ${
+                  className={`p-4 rounded-xl border text-left cursor-pointer transition-all shadow-xs flex flex-col justify-between relative overflow-hidden ${
                     isCurrent
                       ? 'bg-slate-900 text-white border-slate-900 ring-2 ring-amber-400'
+                      : isTeacher
+                      ? 'bg-gradient-to-br from-amber-50/80 to-amber-100/50 text-slate-900 border-amber-300 ring-1 ring-amber-400/40 hover:border-amber-400 shadow-amber-100'
                       : 'bg-white text-slate-900 border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                   }`}
                 >
+                  {isTeacher && (
+                    <div className="absolute top-2 right-2">
+                      <span className="bg-amber-500 text-slate-950 font-black text-[9px] px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-xs border border-amber-600/30">
+                        <ChefHat className="w-2.5 h-2.5" /> DOCENTE
+                      </span>
+                    </div>
+                  )}
+
                   <div>
                     <div className="flex items-start justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2.5">
                         <div
-                          className={`w-9 h-9 rounded-lg ${st.avatarColor} text-white font-bold flex items-center justify-center text-xs shrink-0`}
+                          className={`w-9 h-9 rounded-lg ${st.avatarColor} text-white font-bold flex items-center justify-center text-xs shrink-0 shadow-xs`}
                         >
                           {st.name.split(' ').map((n) => n[0]).slice(0, 2).join('')}
                         </div>
-                        <div>
+                        <div className="pr-14">
                           <h4 className={`text-xs font-bold leading-tight ${isCurrent ? 'text-white' : 'text-slate-900'}`}>
                             {st.name}
                           </h4>
                           <div className="flex items-center gap-1.5 mt-0.5">
-                            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${isCurrent ? 'bg-slate-800 text-amber-300' : 'bg-amber-50 text-amber-900 border border-amber-200'}`}>
-                              ID: {st.studentCode}
+                            <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded font-bold ${
+                              isTeacher
+                                ? 'bg-amber-400 text-slate-950 border border-amber-500'
+                                : isCurrent 
+                                ? 'bg-slate-800 text-amber-300' 
+                                : 'bg-amber-50 text-amber-900 border border-amber-200'
+                            }`}>
+                              {isTeacher ? 'DOCENTE' : `ID: ${st.studentCode}`}
                             </span>
-                            <span className={`text-[11px] ${isCurrent ? 'text-slate-300' : 'text-slate-500'}`}>
+                            <span className={`text-[11px] ${isCurrent ? 'text-slate-300' : isTeacher ? 'text-amber-900 font-semibold' : 'text-slate-500'}`}>
                               {st.semester}
                             </span>
                           </div>
@@ -375,13 +409,13 @@ export const CareersView: React.FC<CareersViewProps> = ({
                       </div>
                     </div>
 
-                    <p className={`text-[11px] italic line-clamp-2 mt-2 ${isCurrent ? 'text-slate-300' : 'text-slate-600'}`}>
+                    <p className={`text-[11px] italic line-clamp-2 mt-2 ${isCurrent ? 'text-slate-300' : isTeacher ? 'text-slate-800' : 'text-slate-600'}`}>
                       "{st.highlightQuote}"
                     </p>
                   </div>
 
                   <div className="pt-2 mt-3 border-t border-slate-200/50 flex items-center justify-between text-xs">
-                    <span className={`text-[11px] ${isCurrent ? 'text-amber-300' : 'text-slate-500'}`}>
+                    <span className={`text-[11px] ${isCurrent ? 'text-amber-300' : isTeacher ? 'text-amber-800 font-semibold' : 'text-slate-500'}`}>
                       Level: <strong>{st.perceivedEnglishLevel.split(' - ')[0]}</strong>
                     </span>
                     <button
@@ -414,12 +448,23 @@ export const CareersView: React.FC<CareersViewProps> = ({
                 <span className="text-slate-400">·</span>
                 <span>{currentStudent.name}</span>
                 <span className="text-slate-400">·</span>
-                <span className="font-mono bg-amber-50 px-2 py-0.5 rounded text-amber-900 border border-amber-200 font-bold">
-                  Student ID: {currentStudent.studentCode}
-                </span>
+                {currentStudent.isTeacher ? (
+                  <span className="font-sans bg-amber-400 px-2 py-0.5 rounded text-slate-950 border border-amber-500 font-black text-[10px] uppercase tracking-wider flex items-center gap-1">
+                    <ChefHat className="w-3 h-3" /> DOCENTE DE GASTRONOMÍA
+                  </span>
+                ) : (
+                  <span className="font-mono bg-amber-50 px-2 py-0.5 rounded text-amber-900 border border-amber-200 font-bold">
+                    Student ID: {currentStudent.studentCode}
+                  </span>
+                )}
               </div>
-              <h3 className="text-lg font-bold text-slate-900">
-                All {questions.length} Fieldwork Answers for {currentStudent.name}
+              <h3 className="text-lg font-bold text-slate-900 flex items-center gap-2">
+                <span>All {careerQuestions.length} Fieldwork Answers for {currentStudent.name}</span>
+                {currentStudent.isTeacher && (
+                  <span className="text-xs bg-amber-100 text-amber-900 font-bold px-2 py-0.5 rounded-md border border-amber-300">
+                    Faculty Professor Perspective
+                  </span>
+                )}
               </h3>
             </div>
 
@@ -434,7 +479,7 @@ export const CareersView: React.FC<CareersViewProps> = ({
           </div>
 
           <div className="space-y-4">
-            {questions.map((q) => {
+            {careerQuestions.map((q) => {
               const answer = currentStudent.answers[q.id] || 'Answer not recorded.';
               return (
                 <div
@@ -475,29 +520,41 @@ export const CareersView: React.FC<CareersViewProps> = ({
         </div>
       )}
 
-      {/* Audiovisual & Fieldwork Evidence Section for Film and Television */}
-      {isCineTV && (
+      {/* Audiovisual & Fieldwork Evidence Section (Standardized for Film & TV, Architecture & future careers) */}
+      {careerVideo && (
         <div className="pt-2">
           <div className="bg-slate-900 text-white rounded-xl border border-slate-800 shadow-md overflow-hidden">
             {/* Header Bar */}
             <div className="px-4 py-3 border-b border-slate-800 flex flex-wrap items-center justify-between gap-3 bg-slate-950/70">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-8 h-8 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center shrink-0 shadow-xs">
-                  <Film className="w-4 h-4 text-slate-950" />
+                  {isCine ? (
+                    <Film className="w-4 h-4 text-slate-950" />
+                  ) : isArch ? (
+                    <Compass className="w-4 h-4 text-slate-950" />
+                  ) : isEng ? (
+                    <Cpu className="w-4 h-4 text-slate-950" />
+                  ) : isTour ? (
+                    <Hotel className="w-4 h-4 text-slate-950" />
+                  ) : isGastro ? (
+                    <UtensilsCrossed className="w-4 h-4 text-slate-950" />
+                  ) : (
+                    <Play className="w-4 h-4 text-slate-950 fill-slate-950" />
+                  )}
                 </div>
                 <div className="truncate">
                   <span className="text-[10px] uppercase font-bold tracking-wider text-amber-400 block leading-tight">
-                    UniAgustiniana Audiovisual &amp; Fieldwork Evidence Record
+                    UniAgustiniana Audiovisual Record
                   </span>
                   <h4 className="text-xs sm:text-sm font-bold text-white truncate">
-                    Film &amp; Television · Program Presentation &amp; Student Interview Evidence
+                    {careerVideo.title}
                   </h4>
                 </div>
               </div>
 
               <div className="flex items-center gap-2">
                 <a
-                  href="https://www.youtube.com/watch?v=FZe-EKnNCo4"
+                  href={careerVideo.externalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[11px] font-semibold text-slate-200 hover:text-white bg-slate-800 hover:bg-slate-700 rounded-md border border-slate-700 transition-colors shrink-0 group shadow-2xs"
@@ -510,121 +567,33 @@ export const CareersView: React.FC<CareersViewProps> = ({
               </div>
             </div>
 
-            {/* Content Body: Video Player + Official Evidence Image */}
+            {/* Content Body: Video Player */}
             <div className="p-4 sm:p-5 bg-slate-950/40 space-y-4">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 items-start">
-                {/* Column 1: Compact YouTube Video (Restrained width, not taking full screen) */}
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                      <Play className="w-3.5 h-3.5 text-amber-400" />
-                      <span>Program Presentation Video</span>
-                    </span>
-                    <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-mono">
-                      YouTube · UniAgustiniana
-                    </span>
-                  </div>
-
-                  <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black shadow-inner border border-slate-800 ring-1 ring-white/5">
-                    <iframe
-                      className="absolute inset-0 w-full h-full"
-                      src="https://www.youtube-nocookie.com/embed/FZe-EKnNCo4"
-                      title="Film & Television - Agustiniana University"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      allowFullScreen
-                    />
-                  </div>
-
-                  <p className="text-[11px] text-slate-400 leading-relaxed">
-                    Institutional video presentation of the Film &amp; Television academic program at Agustiniana University (Tagaste Campus), showcasing the television studios, editing suites, audio labs, and photography facilities evaluated during the student interviews.
-                  </p>
+              <div className="max-w-2xl mx-auto bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-3 shadow-inner">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
+                    <Play className="w-3.5 h-3.5 text-amber-400" />
+                    <span>Program Presentation Video</span>
+                  </span>
+                  <span className="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded font-mono">
+                    YouTube · UniAgustiniana
+                  </span>
                 </div>
 
-                {/* Column 2: Accompanying Student Interview Evidence Image */}
-                <div className="bg-slate-900/90 border border-slate-800 rounded-xl p-3.5 space-y-3 flex flex-col justify-between">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-                      <FileCheck className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Documentary Evidence of Interviewed Students</span>
-                    </span>
-                    <span className="text-[10px] bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-2 py-0.5 rounded font-medium">
-                      Verified Fieldwork Log
-                    </span>
-                  </div>
-
-                  {/* Evidence Image / Document Preview with Zoom Trigger */}
-                  <div
-                    onClick={() => {
-                      setZoomLevel(1);
-                      setIsEvidenceModalOpen(true);
-                    }}
-                    className="group relative cursor-pointer rounded-lg overflow-hidden border border-slate-700 bg-slate-950 flex flex-col items-center justify-center hover:border-amber-400/60 transition-all shadow-inner"
-                    title="Click to view full-size evidence document"
-                  >
-                    <img
-                      src={evidenceImageSrc}
-                      alt="UniAgustiniana Film & Television Student Interview Evidence"
-                      className="w-full max-h-[220px] object-contain bg-white group-hover:scale-[1.02] transition-transform duration-200"
-                      onError={() => {
-                        if (evidenceImageSrc !== '/evidence-fieldwork-cinetv.svg') {
-                          setEvidenceImageSrc('/evidence-fieldwork-cinetv.svg');
-                        }
-                      }}
-                    />
-                    <div className="absolute inset-0 bg-slate-950/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-2xs">
-                      <span className="bg-amber-400 text-slate-950 text-xs font-bold px-3 py-1.5 rounded-lg shadow-lg flex items-center gap-1.5">
-                        <ZoomIn className="w-3.5 h-3.5" />
-                        <span>Enlarge Evidence Document</span>
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Student ID Verification Registry Badges */}
-                  <div className="space-y-1.5 pt-1">
-                    <div className="flex items-center justify-between text-[11px] text-slate-400">
-                      <span>Verified Cohort (8 Interviewees):</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setZoomLevel(1);
-                          setIsEvidenceModalOpen(true);
-                        }}
-                        className="text-amber-400 hover:text-amber-300 font-semibold text-[11px] flex items-center gap-1"
-                      >
-                        <Maximize2 className="w-3 h-3" />
-                        <span>Inspect document</span>
-                      </button>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-1.5 text-[10px] text-slate-300 font-mono">
-                      <div className="bg-slate-950/80 px-2 py-1 rounded border border-slate-800/80 truncate">
-                        <span className="text-amber-400 font-bold">#1</span> J. Martínez (20231015012)
-                      </div>
-                      <div className="bg-slate-950/80 px-2 py-1 rounded border border-slate-800/80 truncate">
-                        <span className="text-amber-400 font-bold">#2</span> A. López (20222018045)
-                      </div>
-                      <div className="bg-slate-950/80 px-2 py-1 rounded border border-slate-800/80 truncate">
-                        <span className="text-amber-400 font-bold">#3</span> S. Pacheco (20241009022)
-                      </div>
-                      <div className="bg-slate-950/80 px-2 py-1 rounded border border-slate-800/80 truncate">
-                        <span className="text-amber-400 font-bold">#4</span> E. Garzón (20232014088)
-                      </div>
-                      <div className="bg-slate-950/80 px-2 py-1 rounded border border-slate-800/80 truncate">
-                        <span className="text-amber-400 font-bold">#5</span> J. Castro (20211022005)
-                      </div>
-                      <div className="bg-slate-950/80 px-2 py-1 rounded border border-slate-800/80 truncate">
-                        <span className="text-amber-400 font-bold">#6</span> T. Marulanda (20221019034)
-                      </div>
-                      <div className="bg-slate-950/80 px-2 py-1 rounded border border-slate-800/80 truncate">
-                        <span className="text-amber-400 font-bold">#7</span> N. Viñas (20231011077)
-                      </div>
-                      <div className="bg-slate-950/80 px-2 py-1 rounded border border-slate-800/80 truncate">
-                        <span className="text-amber-400 font-bold">#8</span> J. Menez (20242005019)
-                      </div>
-                    </div>
-                  </div>
+                <div className="relative w-full aspect-video rounded-lg overflow-hidden bg-black shadow-inner border border-slate-800 ring-1 ring-white/5">
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={careerVideo.embedUrl}
+                    title={careerVideo.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    allowFullScreen
+                  />
                 </div>
+
+                <p className="text-[11px] text-slate-400 leading-relaxed text-center sm:text-left">
+                  {careerVideo.description}
+                </p>
               </div>
 
               {/* Section Subtitle / Attribution Credits */}
@@ -634,139 +603,9 @@ export const CareersView: React.FC<CareersViewProps> = ({
                   <span>Tagaste Campus · Agustiniana University (UniAgustiniana)</span>
                 </div>
                 <div className="text-slate-300">
-                  <span className="text-slate-500">Fieldwork Research &amp; Evidence: </span>
-                  <span className="text-amber-400 font-medium">Alejandra Cruz &amp; Melany Casas</span>
+                  <span className="text-slate-500">Research Team: </span>
+                  <span className="text-amber-400 font-medium">{careerVideo.researchTeam}</span>
                 </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Evidence Fullscreen Modal Viewer */}
-      {isEvidenceModalOpen && (
-        <div 
-          className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6"
-          onClick={() => setIsEvidenceModalOpen(false)}
-        >
-          <div 
-            className="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] flex flex-col overflow-hidden text-white animate-in fade-in zoom-in-95 duration-150"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Modal Header */}
-            <div className="px-5 py-3.5 border-b border-slate-800 flex items-center justify-between gap-3 bg-slate-950/90">
-              <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <div className="truncate">
-                  <h3 className="text-sm font-bold text-white truncate">
-                    UniAgustiniana Fieldwork Evidence Document
-                  </h3>
-                  <p className="text-[11px] text-slate-400 truncate">
-                    Student Interview Attendance &amp; ID Registry · Film &amp; Television (Cine y TV)
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 shrink-0">
-                <div className="hidden sm:flex items-center bg-slate-800 rounded-lg p-0.5 border border-slate-700 text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setZoomLevel((prev) => Math.max(0.75, prev - 0.25))}
-                    className="px-2 py-1 text-slate-300 hover:text-white hover:bg-slate-700 rounded"
-                    title="Zoom out"
-                  >
-                    -
-                  </button>
-                  <span className="px-2 font-mono text-slate-300 text-[11px]">{Math.round(zoomLevel * 100)}%</span>
-                  <button
-                    type="button"
-                    onClick={() => setZoomLevel((prev) => Math.min(2, prev + 0.25))}
-                    className="px-2 py-1 text-slate-300 hover:text-white hover:bg-slate-700 rounded"
-                    title="Zoom in"
-                  >
-                    +
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setZoomLevel(1)}
-                    className="px-2 py-1 text-amber-400 hover:bg-slate-700 rounded text-[11px] font-semibold"
-                    title="Reset zoom"
-                  >
-                    Reset
-                  </button>
-                </div>
-
-                <a
-                  href="/evidence-fieldwork-cinetv.svg"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-3 py-1.5 text-xs font-semibold bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 text-slate-200 transition-colors flex items-center gap-1.5"
-                >
-                  <FileText className="w-3.5 h-3.5 text-amber-400" />
-                  <span>Open SVG</span>
-                </a>
-
-                <button
-                  type="button"
-                  onClick={() => setIsEvidenceModalOpen(false)}
-                  className="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white flex items-center justify-center transition-colors"
-                  title="Close modal"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              </div>
-            </div>
-
-            {/* Modal Image Body with Zoom */}
-            <div className="flex-1 overflow-auto p-4 sm:p-6 bg-slate-950/60 flex items-center justify-center min-h-[300px]">
-              <div 
-                className="transition-transform duration-150 origin-center max-w-full"
-                style={{ transform: `scale(${zoomLevel})` }}
-              >
-                <img
-                  src={evidenceImageSrc}
-                  alt="UniAgustiniana Film & Television Student Interview Evidence Document"
-                  className="max-h-[65vh] w-auto mx-auto rounded-lg shadow-2xl border border-slate-700 bg-white"
-                  onError={() => {
-                    if (evidenceImageSrc !== '/evidence-fieldwork-cinetv.svg') {
-                      setEvidenceImageSrc('/evidence-fieldwork-cinetv.svg');
-                    }
-                  }}
-                />
-              </div>
-            </div>
-
-            {/* Modal Footer with Verification Table */}
-            <div className="px-5 py-3 border-t border-slate-800 bg-slate-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-slate-400">
-              <div className="flex items-center gap-2">
-                <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>8 Students Verified:</span>
-                </span>
-                <span className="text-slate-300">
-                  Juan Martínez, Ana López, Samuel Pacheco, Eily Garzón, John Castro, Thomas Marulanda, Nicolás Viñas, José Menez.
-                </span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <label className="cursor-pointer text-amber-400 hover:text-amber-300 font-semibold text-[11px] flex items-center gap-1">
-                  <Upload className="w-3 h-3" />
-                  <span>Load image from device</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) {
-                        const url = URL.createObjectURL(file);
-                        setEvidenceImageSrc(url);
-                      }
-                    }}
-                  />
-                </label>
               </div>
             </div>
           </div>

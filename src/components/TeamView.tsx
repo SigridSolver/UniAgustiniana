@@ -33,7 +33,7 @@ export const TeamView: React.FC<TeamViewProps> = ({
             Student Researchers & Authors of the Study
           </h2>
           <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
-            Fieldwork investigation conducted by student researchers <strong>Alejandra Cruz</strong> and <strong>Melany Casas</strong> as part of the <strong>{metadata.program}</strong> at <strong>{metadata.university}</strong> (Bogotá, Colombia). This exploratory study connects pedagogical training with the authentic academic and vocational realities of students across faculties.
+            Fieldwork investigation conducted by student researchers across academic faculties: Film &amp; Television cohort led by <strong>Alejandra Cruz</strong> &amp; <strong>Melany Casas</strong>, Architecture cohort led by <strong>María Fernanda Rodríguez</strong> &amp; <strong>Helen Sofía Molina</strong>, Engineering cohort led by <strong>Jorge Bustos</strong> &amp; <strong>Andres Parra</strong>, and Hospitality &amp; Tourism cohort led by <strong>Valerin Sophia Conde Hernández</strong> &amp; <strong>Tania Sarah Candela Ruiz</strong> as part of the <strong>{metadata.program}</strong> at <strong>{metadata.university}</strong> (Bogotá, Colombia). This exploratory study connects pedagogical training with authentic academic realities.
           </p>
         </div>
       </div>
@@ -41,7 +41,15 @@ export const TeamView: React.FC<TeamViewProps> = ({
       {/* Team Members Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {interviewers.map((member) => {
-          const isLead = member.name.includes('Alejandra Cruz') || member.name.includes('Melany Casas');
+          const isLead = 
+            member.name.includes('Alejandra Cruz') || 
+            member.name.includes('Melany Casas') ||
+            member.name.includes('María Fernanda Rodríguez') ||
+            member.name.includes('Helen Sofía Molina') ||
+            member.name.includes('Jorge Bustos') ||
+            member.name.includes('Andres Parra') ||
+            member.name.includes('Valerin Sophia Conde') ||
+            member.name.includes('Tania Sarah Candela');
 
           return (
             <div

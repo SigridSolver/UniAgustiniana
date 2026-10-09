@@ -19,7 +19,14 @@ import {
   Briefcase, 
   CheckCircle2, 
   Clapperboard,
-  Heart
+  Compass,
+  Cpu,
+  Code2,
+  Heart,
+  Palmtree,
+  Hotel,
+  UtensilsCrossed,
+  ChefHat
 } from 'lucide-react';
 
 interface AnalyticsViewProps {
@@ -35,8 +42,18 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
   onSelectCareer,
   onSelectStudent
 }) => {
+  const [selectedCohort, setSelectedCohort] = useState<'all' | 'film' | 'architecture' | 'engineering' | 'tourism' | 'gastronomy'>('all');
   const [activeChartTab, setActiveChartTab] = useState<'all' | 'language' | 'academics' | 'internships' | 'mobility'>('all');
   const [hoveredLevel, setHoveredLevel] = useState<string | null>(null);
+
+  const filteredStudents = students.filter((s) => {
+    if (selectedCohort === 'film') return s.career.includes('Cine');
+    if (selectedCohort === 'architecture') return s.career.includes('Arquitectura');
+    if (selectedCohort === 'engineering') return s.career.includes('Ingenier');
+    if (selectedCohort === 'tourism') return s.career.includes('Hotelería') || s.career.includes('Hospitality') || s.career.includes('Turismo');
+    if (selectedCohort === 'gastronomy') return s.career.includes('Gastronom');
+    return true;
+  });
 
   // 1. Calculate English Level Counts dynamically
   const levelCounts: Record<string, number> = {
@@ -46,14 +63,14 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
     'A1': 0
   };
 
-  students.forEach((s) => {
+  filteredStudents.forEach((s) => {
     if (s.perceivedEnglishLevel.startsWith('B2')) levelCounts['B2']++;
     else if (s.perceivedEnglishLevel.startsWith('B1')) levelCounts['B1']++;
     else if (s.perceivedEnglishLevel.startsWith('A2')) levelCounts['A2']++;
     else if (s.perceivedEnglishLevel.startsWith('A1')) levelCounts['A1']++;
   });
 
-  const totalStudents = students.length || 1;
+  const totalStudents = filteredStudents.length || 1;
   const b2Percent = Math.round((levelCounts['B2'] / totalStudents) * 100);
   const b1Percent = Math.round((levelCounts['B1'] / totalStudents) * 100);
   const a2Percent = Math.round((levelCounts['A2'] / totalStudents) * 100);
@@ -103,6 +120,216 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
     { target: 'Canada (VFX & Digital Animation Studios)', count: 1, pct: 12, color: 'bg-cyan-600', desc: 'International visual effects and digital post-production' }
   ];
 
+  // Architecture Survey Datasets (8 verified students)
+  const archQ1Data = [
+    { label: 'Creation and design of spaces', count: 4, pct: 57, color: 'bg-emerald-600', students: 'Alejandra Olaya, Andrés Fernández, Angie Rueda, Sara Vargas' },
+    { label: 'Usefulness, challenges and art', count: 3, pct: 43, color: 'bg-indigo-600', students: 'Anakarina Rojas, Sara Muñoz, Danna Monroy' }
+  ];
+
+  const archQ2Data = [
+    { subject: 'Architectural Workshop (Taller de Arquitectura)', count: 2, pct: 29, color: 'bg-emerald-600', desc: 'Spatial concepts, models and project critiques' },
+    { subject: 'Representation and Media (Representación y Medios)', count: 2, pct: 29, color: 'bg-blue-600', desc: 'Digital drawings, axonometrics and 3D visualization' },
+    { subject: 'Urban Project (Proyecto Urbano)', count: 1, pct: 14, color: 'bg-purple-600', desc: 'City density, public spaces and master planning' },
+    { subject: 'Theory and History (Teoría e Historia)', count: 1, pct: 14, color: 'bg-amber-600', desc: 'Architectural evolution across civilization' },
+    { subject: 'Technological Project (Proyecto Tecnológico)', count: 1, pct: 14, color: 'bg-cyan-600', desc: 'Construction materials and bioclimatic design' }
+  ];
+
+  const archQ3Data = [
+    { space: 'Teamwork / sharing ideas with classmates', count: 4, pct: 57, color: 'bg-emerald-600', desc: 'Camaraderie, studio collaboration and mutual critique' },
+    { space: 'Architecture study / studio and making models', count: 2, pct: 29, color: 'bg-blue-600', desc: 'Dedicated workshops and physical scale model making' },
+    { space: 'Learning new things every day', count: 1, pct: 14, color: 'bg-amber-600', desc: 'Daily intellectual growth and technical discoveries' }
+  ];
+
+  const archQ4Data = [
+    { strategy: 'Improve organization, time management & on-time projects', count: 3, pct: 37.5, color: 'bg-blue-600' },
+    { strategy: 'Practice architectural drawing and techniques', count: 3, pct: 37.5, color: 'bg-emerald-600' },
+    { strategy: 'Study more, read about architecture & pay attention to details', count: 2, pct: 25, color: 'bg-amber-600' }
+  ];
+
+  const archQ5Data = [
+    { action: 'Care for classrooms, furniture, facilities & responsible materials', count: 4, pct: 44, color: 'bg-emerald-600' },
+    { action: 'Keep spaces clean and tidy / don’t leave trash', count: 3, pct: 33, color: 'bg-blue-600' },
+    { action: 'Respect other students and be responsible with resources', count: 2, pct: 23, color: 'bg-purple-600' }
+  ];
+
+  const archQ6Data = [
+    { destination: 'Spain (Madrid & Barcelona)', count: 2, pct: 29, flag: '🇪🇸', color: 'bg-red-600', note: 'European typologies, urban preservation & contemporary architecture' },
+    { destination: 'United States (Chicago & NYC)', count: 1, pct: 14, flag: '🇺🇸', color: 'bg-blue-600', note: 'High-rise engineering & sustainable commercial architecture' },
+    { destination: 'Japan (Tokyo & Kyoto)', count: 1, pct: 14, flag: '🇯🇵', color: 'bg-rose-600', note: 'Minimalist architecture, seismic wood & harmony with nature' },
+    { destination: 'Germany (Berlin & Bauhaus)', count: 1, pct: 14, flag: '🇩🇪', color: 'bg-amber-600', note: 'Bauhaus tradition, ecological building & urban regeneration' },
+    { destination: 'Italy (Rome & Florence)', count: 1, pct: 14, flag: '🇮🇹', color: 'bg-emerald-600', note: 'Classical Renaissance architecture & historic restoration' },
+    { destination: 'France (Paris)', count: 1, pct: 14, flag: '🇫🇷', color: 'bg-indigo-600', note: 'Parisian landmarks, bioclimatic projects & museum spaces' }
+  ];
+
+  const archQ7Data = [
+    { target: 'Architecture studios / architecture firms', count: 5, pct: 38, color: 'bg-emerald-600', desc: 'Bespoke design firms, public and residential projects' },
+    { target: 'Construction companies', count: 3, pct: 23, color: 'bg-blue-600', desc: 'BIM modeling, structural supervision and on-site building' },
+    { target: 'Residential, commercial or interior design', count: 3, pct: 23, color: 'bg-purple-600', desc: 'Custom residential spaces, retail architecture, lighting' },
+    { target: 'Urban planning / public spaces design', count: 2, pct: 16, color: 'bg-amber-600', desc: 'City planning, municipal parks and infrastructure projects' }
+  ];
+
+  // Engineering Survey Datasets (8 verified students)
+  const engQ2Data = [
+    { label: 'Programming / software development', count: 4, pct: 50, color: 'bg-blue-600', students: 'David Mesa, Sebastián Molano, Diego Alian, Juan Bautista' },
+    { label: 'Variety of specialization fields', count: 2, pct: 25, color: 'bg-emerald-600', students: 'Mateo Camacho, Alexis' },
+    { label: 'Mechanics and electronics', count: 1, pct: 12.5, color: 'bg-amber-600', students: 'Adrian Ballares' },
+    { label: 'Flexibility in problem solving', count: 1, pct: 12.5, color: 'bg-purple-600', students: 'Santiago Torres' }
+  ];
+
+  const engQ3Data = [
+    { subject: 'Programming & Software Architecture', count: 3, pct: 37.5, color: 'bg-blue-600', desc: 'Software architecture, algorithms, coding logic' },
+    { subject: 'Calculus (Integral & Differential)', count: 3, pct: 37.5, color: 'bg-indigo-600', desc: 'Integral calculus, differential calculus, mathematical modeling' },
+    { subject: 'Introduction to Engineering', count: 1, pct: 12.5, color: 'bg-emerald-600', desc: 'Foundations of engineering methods and ethics' },
+    { subject: 'Campus Green Areas (Environment)', count: 1, pct: 12.5, color: 'bg-teal-600', desc: 'Open campus green areas supporting study sessions' }
+  ];
+
+  const engQ4Data = [
+    { part: 'Ugus himself (The tail / El saco)', count: 2, pct: 25, color: 'bg-amber-600', desc: 'University mascot physical attributes and affection' },
+    { part: 'Library (Quiet study & books)', count: 2, pct: 25, color: 'bg-blue-600', desc: 'Quiet workspace and academic documentation' },
+    { part: 'Campus Spaces (Green areas / Courts)', count: 2, pct: 25, color: 'bg-emerald-600', desc: 'Recreational courts and scenic green paths' },
+    { part: 'University Dynamics & Activities', count: 1, pct: 12.5, color: 'bg-purple-600', desc: 'Institutional events and integration dynamics' },
+    { part: 'Off-topic (Exams / midterms feedback)', count: 1, pct: 12.5, color: 'bg-slate-500', desc: 'Exam period impressions' }
+  ];
+
+  const engQ5Data = [
+    { dislike: 'Nothing / Everything is fine', count: 3, pct: 37.5, color: 'bg-emerald-600' },
+    { dislike: 'Class schedules & sleeping late', count: 2, pct: 25, color: 'bg-amber-600' },
+    { dislike: 'Accumulated project workload on same day', count: 1, pct: 12.5, color: 'bg-rose-600' },
+    { dislike: 'Specific algorithms class difficulty', count: 1, pct: 12.5, color: 'bg-purple-600' },
+    { dislike: 'Other / sports timing', count: 1, pct: 12.5, color: 'bg-slate-500' }
+  ];
+
+  const engQ6Data = [
+    { activity: 'Cultural experience & learning customs', count: 3, pct: 37.5, color: 'bg-blue-600' },
+    { activity: 'Socializing & walking on campus with peers', count: 2, pct: 25, color: 'bg-emerald-600' },
+    { activity: 'Studying and playing games together', count: 2, pct: 25, color: 'bg-purple-600' },
+    { activity: 'Rest & relaxation', count: 1, pct: 12.5, color: 'bg-amber-600' }
+  ];
+
+  const engQ7Data = [
+    { strategy: 'Self-improvement (Discipline, coding more circuits & projects)', count: 3, pct: 37.5, color: 'bg-blue-600' },
+    { strategy: 'Curriculum update (Modern tech & class rigor)', count: 3, pct: 37.5, color: 'bg-emerald-600' },
+    { strategy: 'Everything is well-done / satisfied', count: 1, pct: 12.5, color: 'bg-teal-600' },
+    { strategy: 'Adjust class hours', count: 1, pct: 12.5, color: 'bg-slate-500' }
+  ];
+
+  const engQ9Data = [
+    { action: 'Keep distance / do not stress him', count: 4, pct: 36, color: 'bg-blue-600', desc: 'Observe without cornering or stressing the campus fauna' },
+    { action: 'Proper trash disposal & clean green areas', count: 2, pct: 18, color: 'bg-emerald-600', desc: 'Use proper waste bins to avoid foraging' },
+    { action: 'Do not feed processed human food', count: 2, pct: 18, color: 'bg-amber-600', desc: 'Preserve natural diet and prevent health issues' },
+    { action: 'Do not use camera flash', count: 2, pct: 18, color: 'bg-purple-600', desc: 'Avoid startling with phone flash photography' },
+    { action: 'Practice institutional respect & values', count: 1, pct: 10, color: 'bg-rose-600', desc: 'Uphold Agustiniana campus wildlife stewardship' }
+  ];
+
+  const engQ10Data = [
+    { destination: 'Spain (Madrid & Barcelona Tech)', count: 3, pct: 33, flag: '🇪🇸', color: 'bg-red-600', note: 'Top engineering & computer science university faculties' },
+    { destination: 'Germany (Tech Hubs)', count: 1, pct: 11, flag: '🇩🇪', color: 'bg-amber-600', note: 'Industry 4.0, mechatronics & precision software' },
+    { destination: 'Mexico (Tech Faculties)', count: 1, pct: 11, flag: '🇲🇽', color: 'bg-emerald-600', note: 'UNAM & Monterrey Tech software exchange networks' },
+    { destination: 'Brazil or Argentina', count: 1, pct: 11, flag: '🇧🇷', color: 'bg-yellow-600', note: 'Latin American computational research institutes' },
+    { destination: 'Chile', count: 1, pct: 11, flag: '🇨🇱', color: 'bg-blue-600', note: 'Santiago tech ecosystem and telecommunications' },
+    { destination: 'Technology Innovation Center', count: 1, pct: 11, flag: '🌐', color: 'bg-indigo-600', note: 'Applied research laboratories and incubation centers' },
+    { destination: 'Not for now / local focus', count: 1, pct: 11, flag: '🇨🇴', color: 'bg-slate-500', note: 'Consolidating undergraduate engineering degree in Bogotá' }
+  ];
+
+  const engQ11Data = [
+    { target: 'Global Tech Companies (Google, Cisco, Software firms)', count: 4, pct: 44, color: 'bg-blue-600', desc: 'Digital platforms, cloud infrastructure, AI applications' },
+    { target: 'Any Industrial Sector', count: 2, pct: 22, color: 'bg-emerald-600', desc: 'Manufacturing, logistics and enterprise digitization' },
+    { target: 'Banking & Financial Sector', count: 1, pct: 11, color: 'bg-indigo-600', desc: 'Transactional security, robust databases, fintech systems' },
+    { target: 'Own Technology Startup / Venture', count: 1, pct: 11, color: 'bg-amber-600', desc: 'Entrepreneurship in custom software development' },
+    { target: 'European Tech Market', count: 1, pct: 11, color: 'bg-purple-600', desc: 'International software contracts and European remote roles' }
+  ];
+
+  const engQ12Data = [
+    { career: 'Mechatronics Engineering', count: 2, pct: 25, color: 'bg-blue-600' },
+    { career: 'Software Development Specialized', count: 2, pct: 25, color: 'bg-emerald-600' },
+    { career: 'Telecommunications Engineering', count: 1, pct: 12.5, color: 'bg-indigo-600' },
+    { career: 'Chemical Engineering', count: 1, pct: 12.5, color: 'bg-amber-600' },
+    { career: 'Film & Television', count: 1, pct: 12.5, color: 'bg-purple-600' },
+    { career: 'Languages / English', count: 1, pct: 12.5, color: 'bg-teal-600' }
+  ];
+
+  // Hospitality and Tourism Survey Datasets (8 verified students)
+  const tourQ1Data = [
+    { label: 'People, cultures & places', count: 4, pct: 50, color: 'bg-emerald-600', students: 'Juan Martín Rubio, Juan Pablo Osorio, Karen Dayana Martínez, Karen Lucía Chaguala' },
+    { label: 'Elective / fun classes', count: 2, pct: 25, color: 'bg-blue-600', students: 'Juan Nicolás Lugo, Nicole Vanessa Rodríguez' },
+    { label: 'Variety of classes', count: 1, pct: 12.5, color: 'bg-amber-600', students: 'Sharon Julieth López' },
+    { label: 'Organize activities', count: 1, pct: 12.5, color: 'bg-purple-600', students: 'Damar Julián Gamboa' }
+  ];
+
+  const tourQ2Data = [
+    { subject: 'Elective / Etiquette & Table Service', count: 4, pct: 50, color: 'bg-emerald-600', desc: 'Protocol, formal dining service, and guest reception standards' },
+    { subject: 'Tourism Theory', count: 1, pct: 12.5, color: 'bg-blue-600', desc: 'Destination dynamics, heritage, and tourism foundations' },
+    { subject: 'Labor Legislation', count: 1, pct: 12.5, color: 'bg-amber-600', desc: 'Hospitality labor regulations and service employment contracts' },
+    { subject: 'Tourism & Hotel Management', count: 1, pct: 12.5, color: 'bg-indigo-600', desc: 'Hotel operations, revenue, and hospitality administration' },
+    { subject: 'Food Safety', count: 1, pct: 12.5, color: 'bg-rose-600', desc: 'Hygiene norms, kitchen sanitation, and food handling standards' }
+  ];
+
+  const tourQ3Data = [
+    { space: 'ESUNA simulation facilities & practical labs', count: 3, pct: 37.5, color: 'bg-emerald-600', desc: 'Dedicated hotel front desk, dining, and mock lab suites' },
+    { space: 'Green Zone (Zonas verdes)', count: 3, pct: 37.5, color: 'bg-teal-600', desc: 'Natural campus gardens and outdoor relaxation areas' },
+    { space: 'Campus & Classmates', count: 1, pct: 12.5, color: 'bg-blue-600', desc: 'Student community and collaborative friendships' },
+    { space: 'Learning & Academic Experience', count: 1, pct: 12.5, color: 'bg-purple-600', desc: 'Quality teaching and faculty mentorship' }
+  ];
+
+  const tourQ4Data = [
+    { activity: 'Customer service & helping people', count: 4, pct: 50, color: 'bg-emerald-600', focus: 'Guest relations, concierge assistance, and front-desk check-in' },
+    { activity: 'Hotel & tourism operational activities', count: 3, pct: 37.5, color: 'bg-blue-600', focus: 'Room operations, resort logistics, and guided tour management' },
+    { activity: 'Organization & administrative tasks', count: 2, pct: 25, color: 'bg-amber-600', focus: 'Booking coordination, billing, and scheduling documentation' },
+    { activity: 'Study & learning on site', count: 1, pct: 12.5, color: 'bg-indigo-600', focus: 'Real-world hotel problem solving and practical insights' },
+    { activity: 'Social interaction with visitors', count: 1, pct: 12.5, color: 'bg-rose-600', focus: 'Intercultural dialogue and multilingual guest communication' }
+  ];
+
+  const tourQ5Data = [
+    { restriction: 'Ignore rules / Act without authorization', count: 4, pct: 50, color: 'bg-rose-600' },
+    { restriction: 'Academic responsibilities neglect', count: 1, pct: 12.5, color: 'bg-amber-600' },
+    { restriction: 'Sleep on shift / Go home early', count: 1, pct: 12.5, color: 'bg-blue-600' },
+    { restriction: 'Unrelated / general response', count: 1, pct: 12.5, color: 'bg-slate-500' },
+    { restriction: 'Don’t know / not yet familiar', count: 1, pct: 12.5, color: 'bg-slate-400' }
+  ];
+
+  const tourQ6Data = [
+    { strategy: 'Study more / Academic effort & theory', count: 3, pct: 37.5, color: 'bg-emerald-600' },
+    { strategy: 'Improve English & foreign language skills', count: 2, pct: 25, color: 'bg-blue-600' },
+    { strategy: 'Commitment & personal responsibility', count: 2, pct: 25, color: 'bg-indigo-600' },
+    { strategy: 'Professional & practical service skills', count: 1, pct: 12.5, color: 'bg-amber-600' }
+  ];
+
+  const tourQ7Data = [
+    { action: 'Active listening and empathizing with others', count: 3, pct: 37.5, color: 'bg-emerald-600', desc: 'Understanding guest requirements and teammate needs' },
+    { action: 'Be a good teammate & supportive colleague', count: 2, pct: 25, color: 'bg-blue-600', desc: 'Fostering cooperation during peak hotel shift hours' },
+    { action: 'Be kind, warm and respectful to everyone', count: 2, pct: 25, color: 'bg-teal-600', desc: 'Maintaining cordial, welcoming hospitality standards' },
+    { action: 'Guest care & personalized experience', count: 1, pct: 12.5, color: 'bg-purple-600', desc: 'Going above and beyond for visitor comfort and delight' }
+  ];
+
+  const tourQ8Data = [
+    { destination: 'Spain (Tourism & Culinary Hubs)', count: 3, pct: 37.5, flag: '🇪🇸', color: 'bg-red-600', note: 'Madrid, Barcelona & Balearic luxury resort management' },
+    { destination: 'Mexico (Hospitality & Heritage)', count: 3, pct: 37.5, flag: '🇲🇽', color: 'bg-emerald-600', note: 'Cancún, Riviera Maya & colonial hotel administration' },
+    { destination: 'United States', count: 2, pct: 25, flag: '🇺🇸', color: 'bg-blue-600', note: 'Major international hotel chains and theme parks' },
+    { destination: 'Canada', count: 2, pct: 25, flag: '🇨🇦', color: 'bg-cyan-600', note: 'Multicultural tourism, national parks and ski resort hotels' },
+    { destination: 'Brazil', count: 1, pct: 12.5, flag: '🇧🇷', color: 'bg-yellow-600', note: 'South American ecotourism and coastal hospitality' },
+    { destination: 'Costa Rica', count: 1, pct: 12.5, flag: '🇨🇷', color: 'bg-teal-600', note: 'Pioneering global sustainable and biodiversity ecotourism' },
+    { destination: 'Puerto Rico', count: 1, pct: 12.5, flag: '🇵🇷', color: 'bg-indigo-600', note: 'Caribbean resort operations and maritime cruise hubs' },
+    { destination: 'Dominican Republic', count: 1, pct: 12.5, flag: '🇩🇴', color: 'bg-amber-600', note: 'Punta Cana all-inclusive luxury resort networks' }
+  ];
+
+  const tourQ9Data = [
+    { career: 'No / Dedicated 100% to Tourism', count: 3, pct: 37.5, color: 'bg-slate-600' },
+    { career: 'Business Administration (Hotel Management)', count: 2, pct: 25, color: 'bg-blue-600' },
+    { career: 'Marketing & Commercial Promotion', count: 1, pct: 12.5, color: 'bg-emerald-600' },
+    { career: 'Languages / Foreign Languages Degree', count: 1, pct: 12.5, color: 'bg-indigo-600' },
+    { career: 'Marine Biology (Coastal Ecotourism)', count: 1, pct: 12.5, color: 'bg-cyan-600' }
+  ];
+
+  const tourQ10Data = [
+    { target: 'International Hotel Chains', count: 4, pct: 50, color: 'bg-emerald-600', desc: 'Front desk, food & beverage, guest relations, revenue management' },
+    { target: 'Working Abroad (International Mobility)', count: 4, pct: 50, color: 'bg-blue-600', desc: 'Global resorts, European hotels, and international cruise ships' },
+    { target: 'Travel Agencies & Tour Operators', count: 2, pct: 25, color: 'bg-indigo-600', desc: 'Itinerary planning, flight bookings, and customized packages' },
+    { target: 'International Airports (El Dorado, etc.)', count: 2, pct: 25, color: 'bg-cyan-600', desc: 'Passenger service, airline customer care, and VIP lounges' },
+    { target: 'Multinational Tourism Companies', count: 1, pct: 12.5, color: 'bg-purple-600', desc: 'Corporate travel management and global distribution systems' },
+    { target: 'Luxury Restaurants & Resorts', count: 1, pct: 12.5, color: 'bg-amber-600', desc: 'High-end culinary service, banquet and convention hosting' },
+    { target: 'Own Tourism Business / Venture', count: 1, pct: 12.5, color: 'bg-rose-600', desc: 'Ecotourism agency and independent boutique hospitality' }
+  ];
+
   return (
     <div className="space-y-8 pb-12">
       {/* Top Infographics Header Banner */}
@@ -121,28 +348,133 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
           </h2>
 
           <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
-            Statistical charts synthesizing the 8 research questions answered by the 8 interviewed students in Film and Television (UniAgustiniana): CEFR language levels, vocational preferences, campus space consensus, broadcast internships, and global exchange targets.
+            Statistical charts synthesizing empirical surveys answered by verified undergraduate student cohorts at UniAgustiniana: Film &amp; Television (8 students), Architecture (8 students), Engineering (8 students), and Hospitality &amp; Tourism (8 students).
           </p>
 
           {/* Quick Metrics Ribbon */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4 border-t border-slate-700/80">
             <div>
-              <span className="block text-2xl font-bold text-amber-400">{students.length}</span>
-              <span className="text-xs text-slate-300">Interviewed Students</span>
+              <span className="block text-2xl font-bold text-amber-400">{filteredStudents.length}</span>
+              <span className="text-xs text-slate-300">
+                {selectedCohort === 'all'
+                  ? 'Total Interviewees'
+                  : selectedCohort === 'film'
+                  ? 'Film & TV Students'
+                  : selectedCohort === 'architecture'
+                  ? 'Architecture Students'
+                  : selectedCohort === 'engineering'
+                  ? 'Engineering Students'
+                  : 'Hospitality & Tourism Students'}
+              </span>
             </div>
             <div>
               <span className="block text-2xl font-bold text-emerald-400">{b1Percent + b2Percent}%</span>
               <span className="text-xs text-slate-300">CEFR Intermediate (B1/B2)</span>
             </div>
             <div>
-              <span className="block text-2xl font-bold text-emerald-400">100%</span>
-              <span className="text-xs text-slate-300">Green Area Affinity (Q3)</span>
+              <span className="block text-2xl font-bold text-emerald-400">
+                {selectedCohort === 'engineering'
+                  ? '50%'
+                  : selectedCohort === 'architecture'
+                  ? '57%'
+                  : selectedCohort === 'tourism'
+                  ? '50%'
+                  : '100%'}
+              </span>
+              <span className="text-xs text-slate-300">
+                {selectedCohort === 'engineering'
+                  ? 'Programming Passion (Q2)'
+                  : selectedCohort === 'architecture'
+                  ? 'Teamwork Affinity (Q3)'
+                  : selectedCohort === 'tourism'
+                  ? 'People & Cultures (Q1)'
+                  : 'Green Area Affinity (Q3)'}
+              </span>
             </div>
             <div>
-              <span className="block text-2xl font-bold text-amber-400">100%</span>
-              <span className="text-xs text-slate-300">RCN / Caracol TV Reach (Q4)</span>
+              <span className="block text-2xl font-bold text-amber-400">
+                {selectedCohort === 'engineering'
+                  ? '50%'
+                  : selectedCohort === 'architecture'
+                  ? '38%'
+                  : selectedCohort === 'tourism'
+                  ? '50%'
+                  : '100%'}
+              </span>
+              <span className="text-xs text-slate-300">
+                {selectedCohort === 'engineering'
+                  ? 'Tech Giants & Google (Q11)'
+                  : selectedCohort === 'architecture'
+                  ? 'Architecture Studios (Q7)'
+                  : selectedCohort === 'tourism'
+                  ? 'Hotels / Work Abroad (Q10)'
+                  : 'RCN / Caracol TV (Q4)'}
+              </span>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Program Cohort Filter */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3 rounded-xl border border-slate-200 shadow-xs">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-bold text-slate-700">Filter Analytics by Program Cohort:</span>
+        </div>
+        <div className="flex items-center gap-1.5 overflow-x-auto">
+          <button
+            onClick={() => setSelectedCohort('all')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
+              selectedCohort === 'all'
+                ? 'bg-slate-900 text-amber-400 shadow-xs ring-1 ring-amber-400'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            All Programs ({students.length} Students)
+          </button>
+          <button
+            onClick={() => setSelectedCohort('film')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 ${
+              selectedCohort === 'film'
+                ? 'bg-slate-900 text-amber-400 shadow-xs ring-1 ring-amber-400'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            <Clapperboard className="w-3.5 h-3.5" />
+            <span>Film &amp; Television (8)</span>
+          </button>
+          <button
+            onClick={() => setSelectedCohort('architecture')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 ${
+              selectedCohort === 'architecture'
+                ? 'bg-slate-900 text-amber-400 shadow-xs ring-1 ring-amber-400'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            <Compass className="w-3.5 h-3.5" />
+            <span>Architecture (8)</span>
+          </button>
+          <button
+            onClick={() => setSelectedCohort('engineering')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 ${
+              selectedCohort === 'engineering'
+                ? 'bg-slate-900 text-amber-400 shadow-xs ring-1 ring-amber-400'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            <Cpu className="w-3.5 h-3.5" />
+            <span>Engineering (8)</span>
+          </button>
+          <button
+            onClick={() => setSelectedCohort('tourism')}
+            className={`px-3 py-1.5 text-xs font-semibold rounded-lg transition-colors flex items-center gap-1.5 ${
+              selectedCohort === 'tourism'
+                ? 'bg-slate-900 text-amber-400 shadow-xs ring-1 ring-amber-400'
+                : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+            }`}
+          >
+            <Palmtree className="w-3.5 h-3.5" />
+            <span>Hospitality &amp; Tourism (8)</span>
+          </button>
         </div>
       </div>
 
@@ -282,7 +614,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               </div>
 
               <div className="grid sm:grid-cols-2 gap-3">
-                {students.map((st) => (
+                {filteredStudents.map((st) => (
                   <div
                     key={st.id}
                     className="p-3 rounded-lg border border-slate-200 bg-slate-50/60 hover:bg-white hover:border-slate-300 transition-all flex items-center justify-between"
@@ -296,7 +628,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
                           {st.name}
                         </span>
                         <span className="font-mono text-[10px] text-amber-800 font-semibold">
-                          ID: {st.studentCode}
+                          ID: {st.studentCode} · {st.career.split(' ')[0]}
                         </span>
                       </div>
                     </div>
@@ -325,30 +657,30 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             <div>
               <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
                 <Camera className="w-5 h-5 text-amber-600" />
-                <span>Program Appeal & Favorite Subjects (Q1 & Q2)</span>
+                <span>Program Appeal &amp; Favorite Subjects ({selectedCohort === 'engineering' ? 'Q2 & Q3' : 'Q1 & Q2'})</span>
               </h3>
               <p className="text-xs text-slate-500">
-                Core vocational identity and engagement across the curriculum
+                Core vocational identity and engagement across the curriculum {selectedCohort === 'engineering' ? '(Engineering Cohort)' : selectedCohort === 'architecture' ? '(Architecture Cohort)' : selectedCohort === 'tourism' ? '(Hospitality & Tourism Cohort)' : selectedCohort === 'film' ? '(Film & TV Cohort)' : '(All Cohorts)'}
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Q1: What do you like most? */}
+            {/* Q1 / Q2: What do you like most? */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
-                    Question 1 Analysis
+                    Question {selectedCohort === 'engineering' ? '2' : '1'} Analysis · {selectedCohort === 'engineering' ? 'Engineering' : selectedCohort === 'architecture' ? 'Architecture' : selectedCohort === 'tourism' ? 'Hospitality & Tourism' : 'Film & Television'}
                   </span>
                   <h4 className="text-sm font-bold text-slate-900">
-                    What do you like most about your career?
+                    What do you like most about your degree / career?
                   </h4>
                 </div>
               </div>
 
               <div className="space-y-3 pt-2">
-                {q1Data.map((item, idx) => (
+                {(selectedCohort === 'engineering' ? engQ2Data : selectedCohort === 'architecture' ? archQ1Data : selectedCohort === 'tourism' ? tourQ1Data : q1Data).map((item, idx) => (
                   <div key={idx} className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="font-semibold text-slate-800">{item.label}</span>
@@ -368,12 +700,12 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               </div>
             </div>
 
-            {/* Q2: Favorite Subjects */}
+            {/* Q2 / Q3: Favorite Subjects */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
-                    Question 2 Analysis
+                    Question {selectedCohort === 'engineering' ? '3' : '2'} Analysis · {selectedCohort === 'engineering' ? 'Engineering' : selectedCohort === 'architecture' ? 'Architecture' : selectedCohort === 'tourism' ? 'Hospitality & Tourism' : 'Film & Television'}
                   </span>
                   <h4 className="text-sm font-bold text-slate-900">
                     What is your favorite subject?
@@ -382,7 +714,7 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               </div>
 
               <div className="space-y-3 pt-2">
-                {q2Data.map((item, idx) => (
+                {(selectedCohort === 'engineering' ? engQ3Data : selectedCohort === 'architecture' ? archQ2Data : selectedCohort === 'tourism' ? tourQ2Data : q2Data).map((item, idx) => (
                   <div key={idx} className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span className="font-semibold text-slate-800">{item.subject}</span>
@@ -403,116 +735,291 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
             </div>
           </div>
 
-          {/* Q3: Unanimous Campus Space Banner */}
-          <div className="bg-emerald-50/90 rounded-xl p-5 border border-emerald-300 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-lg">
-                100%
+          {/* Campus Space / Facilities Banner */}
+          {selectedCohort === 'engineering' ? (
+            <div className="bg-blue-50/90 rounded-xl p-5 border border-blue-300 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-lg">
+                  50%
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-800 block">
+                    Question 4 Finding · Engineering Program (Ugus &amp; Campus)
+                  </span>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Favorite Part of Ugus &amp; Campus: Mascot Connection (25%) &amp; Library Study (25%)
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                    Engineering students highlighted affection for mascot Ugus (The tail / El saco: 25%), quiet academic study in the library (25%), and recreation across campus green areas and sports courts (25%).
+                  </p>
+                </div>
               </div>
-              <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
-                  Question 3 Unanimous Finding
-                </span>
-                <h4 className="text-sm font-bold text-slate-900">
-                  Campus Space Preference: The Green Area of UniAgustiniana
-                </h4>
-                <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
-                  All 8 surveyed students (100%) unanimously selected the green area of Campus Tagaste as their favorite location, citing open natural lighting, peaceful atmosphere for script reading, and crew meeting space.
-                </p>
-              </div>
+              <span className="text-xs font-bold text-blue-800 bg-blue-200/60 px-3 py-1.5 rounded-lg shrink-0">
+                25% Ugus · 25% Library · 25% Spaces
+              </span>
             </div>
-            <span className="text-xs font-bold text-emerald-800 bg-emerald-200/60 px-3 py-1.5 rounded-lg shrink-0">
-              8 of 8 Students in Total Consensus
-            </span>
-          </div>
+          ) : selectedCohort === 'architecture' ? (
+            <div className="bg-emerald-50/90 rounded-xl p-5 border border-emerald-300 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-lg">
+                  57%
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
+                    Question 3 Finding · Architecture Program
+                  </span>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Favorite Part of University: Teamwork &amp; Sharing Ideas in Studios
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                    57% of surveyed students (4 out of 8) highlighted teamwork and exchanging design solutions with peers as their favorite part of university, followed by dedicated model making in architecture studios (29%) and daily learning (14%).
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-bold text-emerald-800 bg-emerald-200/60 px-3 py-1.5 rounded-lg shrink-0">
+                57% Teamwork · 29% Studios
+              </span>
+            </div>
+          ) : selectedCohort === 'tourism' ? (
+            <div className="bg-teal-50/90 rounded-xl p-5 border border-teal-300 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-teal-600 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-lg">
+                  75%
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-teal-800 block">
+                    Question 3 Finding · Hospitality and Tourism Program
+                  </span>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Favorite Part of UniAgustiniana: ESUNA Simulation Facilities (37.5%) &amp; Green Zone (37.5%)
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                    Hospitality students are evenly drawn to practical immersion: 37.5% praised ESUNA specialized hotel, mock bar and dining laboratories, while 37.5% praised the green zone for campus tranquility and collaborative study.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-bold text-teal-800 bg-teal-200/60 px-3 py-1.5 rounded-lg shrink-0">
+                37.5% ESUNA · 37.5% Green Zone
+              </span>
+            </div>
+          ) : (
+            <div className="bg-emerald-50/90 rounded-xl p-5 border border-emerald-300 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="flex items-start gap-3">
+                <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs font-bold text-lg">
+                  100%
+                </div>
+                <div>
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-800 block">
+                    Question 3 Unanimous Finding · Film &amp; Television
+                  </span>
+                  <h4 className="text-sm font-bold text-slate-900">
+                    Campus Space Preference: The Green Area of UniAgustiniana
+                  </h4>
+                  <p className="text-xs text-slate-600 leading-relaxed mt-0.5">
+                    All 8 surveyed students (100%) unanimously selected the green area of Campus Tagaste as their favorite location, citing open natural lighting, peaceful atmosphere for script reading, and crew meeting space.
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs font-bold text-emerald-800 bg-emerald-200/60 px-3 py-1.5 rounded-lg shrink-0">
+                8 of 8 Students in Total Consensus
+              </span>
+            </div>
+          )}
         </section>
       )}
 
-      {/* SECTION 3: MEDIA, INTERNSHIPS & PRACTICE (Q4, Q5 & Q8) */}
+      {/* SECTION 3: PROFESSIONAL PROJECTION, IMPROVEMENT & PRACTICE */}
       {(activeChartTab === 'all' || activeChartTab === 'internships') && (
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
                 <Tv className="w-5 h-5 text-amber-600" />
-                <span>Media Internships & Employability Projections (Q4, Q5 & Q8)</span>
+                <span>Professional Projections, Skills Improvement &amp; Career Work</span>
               </h3>
               <p className="text-xs text-slate-500">
-                Industry alignment with Colombian television networks and streaming platforms
+                Target employment sectors and strategies for academic development
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Q4: Internships */}
+            {/* Left Card: Internships or Degree Improvement */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
-                  Question 4 (Internships)
+                  {selectedCohort === 'engineering'
+                    ? 'Question 7 (Career Improvement)'
+                    : selectedCohort === 'architecture'
+                    ? 'Question 4 (Skills Improvement)'
+                    : selectedCohort === 'tourism'
+                    ? 'Question 4 (Internship Tasks)'
+                    : 'Question 4 (Internships)'}
                 </span>
                 <h4 className="text-sm font-bold text-slate-900">
-                  Where to do practicums?
+                  {selectedCohort === 'engineering'
+                    ? 'What can you do to improve?'
+                    : selectedCohort === 'architecture'
+                    ? 'Actions to improve degree?'
+                    : selectedCohort === 'tourism'
+                    ? 'What can you do in internships?'
+                    : 'Where to do practicums?'}
                 </h4>
               </div>
 
               <div className="space-y-3">
-                {q4Data.map((item, idx) => (
-                  <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
-                    <div className="flex justify-between text-xs font-bold text-slate-900">
-                      <span>{item.network}</span>
-                      <span>{item.pct}%</span>
+                {selectedCohort === 'engineering' ? (
+                  engQ7Data.map((item, idx) => (
+                    <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                      <div className="flex justify-between text-xs font-bold text-slate-900">
+                        <span>{item.strategy}</span>
+                        <span>{item.pct}%</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                      </div>
                     </div>
-                    <div className="w-full bg-slate-200 rounded-full h-2">
-                      <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                  ))
+                ) : selectedCohort === 'architecture' ? (
+                  archQ4Data.map((item, idx) => (
+                    <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                      <div className="flex justify-between text-xs font-bold text-slate-900">
+                        <span>{item.strategy}</span>
+                        <span>{item.pct}%</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                      </div>
                     </div>
-                    <p className="text-[10px] text-slate-500">{item.focus}</p>
-                  </div>
-                ))}
+                  ))
+                ) : selectedCohort === 'tourism' ? (
+                  tourQ4Data.map((item, idx) => (
+                    <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                      <div className="flex justify-between text-xs font-bold text-slate-900">
+                        <span>{item.activity}</span>
+                        <span>{item.pct}%</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                      </div>
+                      <p className="text-[10px] text-slate-500">{item.focus}</p>
+                    </div>
+                  ))
+                ) : (
+                  q4Data.map((item, idx) => (
+                    <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                      <div className="flex justify-between text-xs font-bold text-slate-900">
+                        <span>{item.network}</span>
+                        <span>{item.pct}%</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                      </div>
+                      <p className="text-[10px] text-slate-500">{item.focus}</p>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
-            {/* Q5: Career Improvement */}
+            {/* Middle Card: Career Improvement, Dislikes or University Care */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
-                  Question 5 (Improvement)
+                  {selectedCohort === 'engineering'
+                    ? 'Question 5 (Academic Challenges)'
+                    : selectedCohort === 'architecture'
+                    ? 'Question 5 (University Stewardship)'
+                    : selectedCohort === 'tourism'
+                    ? 'Question 6 (Professional Improvement)'
+                    : 'Question 5 (Improvement)'}
                 </span>
                 <h4 className="text-sm font-bold text-slate-900">
-                  Actions to improve in career?
+                  {selectedCohort === 'engineering'
+                    ? "What don't you like as student?"
+                    : selectedCohort === 'architecture'
+                    ? 'How to take care of university?'
+                    : selectedCohort === 'tourism'
+                    ? 'What can you do to improve?'
+                    : 'Actions to improve in career?'}
                 </h4>
               </div>
 
               <div className="space-y-3">
-                {q5Data.map((item, idx) => (
-                  <div key={idx} className="space-y-1">
-                    <div className="flex justify-between text-xs font-semibold text-slate-800">
-                      <span>{item.strategy}</span>
-                      <span>{item.pct}%</span>
+                {selectedCohort === 'engineering' ? (
+                  engQ5Data.map((item, idx) => (
+                    <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                      <div className="flex justify-between text-xs font-bold text-slate-900">
+                        <span>{item.dislike}</span>
+                        <span>{item.pct}%</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                      </div>
                     </div>
-                    <div className="w-full bg-slate-100 rounded-full h-2.5">
-                      <div className={`${item.color} h-2.5 rounded-full`} style={{ width: `${item.pct}%` }} />
+                  ))
+                ) : selectedCohort === 'architecture' ? (
+                  archQ5Data.map((item, idx) => (
+                    <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                      <div className="flex justify-between text-xs font-bold text-slate-900">
+                        <span>{item.action}</span>
+                        <span>{item.pct}%</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ))
+                ) : selectedCohort === 'tourism' ? (
+                  tourQ6Data.map((item, idx) => (
+                    <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
+                      <div className="flex justify-between text-xs font-bold text-slate-900">
+                        <span>{item.strategy}</span>
+                        <span>{item.pct}%</span>
+                      </div>
+                      <div className="w-full bg-slate-200 rounded-full h-2">
+                        <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  q5Data.map((item, idx) => (
+                    <div key={idx} className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold text-slate-800">
+                        <span>{item.strategy}</span>
+                        <span>{item.pct}%</span>
+                      </div>
+                      <div className="w-full bg-slate-100 rounded-full h-2.5">
+                        <div className={`${item.color} h-2.5 rounded-full`} style={{ width: `${item.pct}%` }} />
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
-            {/* Q8: Practice Profession */}
+            {/* Right Card: Practice / Employability */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
-                  Question 8 (Employability)
+                  {selectedCohort === 'engineering'
+                    ? 'Question 11 (Workplace Projections)'
+                    : selectedCohort === 'architecture'
+                    ? 'Question 7 (Workplace Projections)'
+                    : selectedCohort === 'tourism'
+                    ? 'Question 10 (Future Employment)'
+                    : 'Question 8 (Employability)'}
                 </span>
                 <h4 className="text-sm font-bold text-slate-900">
-                  Where to practice career?
+                  Where do you think you can work?
                 </h4>
               </div>
 
               <div className="space-y-3">
-                {q8Data.map((item, idx) => (
+                {(selectedCohort === 'engineering' ? engQ11Data : selectedCohort === 'architecture' ? archQ7Data : selectedCohort === 'tourism' ? tourQ10Data : q8Data).map((item, idx) => (
                   <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
                     <div className="flex justify-between text-xs font-bold text-slate-900">
-                      <span>{item.target}</span>
+                      <span>{(item as any).target}</span>
                       <span>{item.pct}%</span>
                     </div>
                     <div className="w-full bg-slate-200 rounded-full h-2">
@@ -527,37 +1034,43 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
         </section>
       )}
 
-      {/* SECTION 4: MOBILITY & MASCOT HUGOS (Q6 & Q7) */}
+      {/* SECTION 4: MOBILITY & STEWARDSHIP */}
       {(activeChartTab === 'all' || activeChartTab === 'mobility') && (
         <section className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-bold text-slate-900 tracking-tight flex items-center gap-2">
                 <Globe2 className="w-5 h-5 text-amber-600" />
-                <span>Exchange Mobility & Mascot Hugos Guardianship (Q6 & Q7)</span>
+                <span>Exchange Mobility &amp; Caring for Others / Mascot</span>
               </h3>
               <p className="text-xs text-slate-500">
-                Internationalization destinations and animal welfare in the university ecosystem
+                International study destinations and institutional care commitments
               </p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Q7: Exchange Destinations */}
+            {/* Exchange Destinations */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <div>
                   <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
-                    Question 7 Analysis
+                    {selectedCohort === 'engineering'
+                      ? 'Question 10 Analysis (Engineering)'
+                      : selectedCohort === 'architecture'
+                      ? 'Question 6 Analysis (Architecture)'
+                      : selectedCohort === 'tourism'
+                      ? 'Question 8 Analysis (Hospitality)'
+                      : 'Question 7 Analysis (Film & TV)'}
                   </span>
                   <h4 className="text-sm font-bold text-slate-900">
-                    Would you like to do a student exchange? Where?
+                    Would you like to study in another country? Where?
                   </h4>
                 </div>
               </div>
 
               <div className="space-y-3 pt-2">
-                {q7Data.map((dest, idx) => (
+                {(selectedCohort === 'engineering' ? engQ10Data : selectedCohort === 'architecture' ? archQ6Data : selectedCohort === 'tourism' ? tourQ8Data : q7Data).map((dest, idx) => (
                   <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
                     <div className="flex items-center justify-between text-xs font-bold text-slate-900">
                       <span className="flex items-center gap-1.5">
@@ -575,37 +1088,95 @@ export const AnalyticsView: React.FC<AnalyticsViewProps> = ({
               </div>
             </div>
 
-            {/* Q6: Hugos Mascot Care */}
+            {/* Mascot Hugos/Agus Care or Caring for Others */}
             <div className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-2">
                 <div className="flex items-center gap-2">
-                  <Dog className="w-4 h-4 text-amber-600" />
+                  {selectedCohort === 'architecture' ? (
+                    <GraduationCap className="w-4 h-4 text-amber-600" />
+                  ) : selectedCohort === 'tourism' ? (
+                    <Heart className="w-4 h-4 text-rose-600" />
+                  ) : (
+                    <Dog className="w-4 h-4 text-amber-600" />
+                  )}
                   <div>
                     <span className="text-[10px] font-bold uppercase tracking-wider text-amber-700 block">
-                      Question 6 Analysis
+                      {selectedCohort === 'engineering'
+                        ? 'Question 9 Analysis (Engineering)'
+                        : selectedCohort === 'architecture'
+                        ? 'Question 5 Analysis (Architecture)'
+                        : selectedCohort === 'tourism'
+                        ? 'Question 7 Analysis (Hospitality)'
+                        : 'Question 6 Analysis (Film & TV)'}
                     </span>
                     <h4 className="text-sm font-bold text-slate-900">
-                      How can you take care of Hugos?
+                      {selectedCohort === 'engineering'
+                        ? 'How can you take care of Agus (Ugus)?'
+                        : selectedCohort === 'architecture'
+                        ? 'How can you take care of the university?'
+                        : selectedCohort === 'tourism'
+                        ? 'How can you take care of others?'
+                        : 'How can you take care of Hugos?'}
                     </h4>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-3 pt-2">
-                {q6Data.map((item, idx) => (
+                {(selectedCohort === 'engineering' ? engQ9Data : selectedCohort === 'architecture' ? archQ5Data : selectedCohort === 'tourism' ? tourQ7Data : q6Data).map((item, idx) => (
                   <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1">
                     <div className="flex justify-between text-xs font-bold text-slate-900">
-                      <span>{item.action}</span>
-                      <span>{item.count} std. ({item.pct}%)</span>
+                      <span>{(item as any).action}</span>
+                      <span>{(item as any).count} std. ({item.pct}%)</span>
                     </div>
                     <div className="w-full bg-slate-200 rounded-full h-2">
                       <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct}%` }} />
                     </div>
-                    <p className="text-[10px] text-slate-500">{item.desc}</p>
+                    {(item as any).desc && <p className="text-[10px] text-slate-500">{(item as any).desc}</p>}
                   </div>
                 ))}
               </div>
             </div>
+          </div>
+        </section>
+      )}
+
+      {/* SECTION 5: MULTIDISCIPLINARY INTERESTS (ENGINEERING Q12 & TOURISM Q9) */}
+      {(selectedCohort === 'engineering' || selectedCohort === 'tourism' || selectedCohort === 'all') && (
+        <section className="bg-white rounded-xl p-6 border border-slate-200 shadow-xs space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 block">
+                {selectedCohort === 'tourism'
+                  ? 'Question 9 Insight · Hospitality and Tourism Cohort'
+                  : selectedCohort === 'engineering'
+                  ? 'Question 12 Insight · Engineering Cohort'
+                  : 'Multidisciplinary Insight · Engineering (Q12) & Tourism (Q9)'}
+              </span>
+              <h3 className="text-base font-bold text-slate-900">
+                Alternative Degree Interests &amp; Complementary Studies
+              </h3>
+              <p className="text-xs text-slate-500">
+                "Do you think you could study another career? Which one?"
+              </p>
+            </div>
+            <span className="text-xs font-bold text-blue-800 bg-blue-100 px-2.5 py-1 rounded">
+              Multidisciplinary Horizons
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            {(selectedCohort === 'tourism' ? tourQ9Data : engQ12Data).map((item, idx) => (
+              <div key={idx} className="p-3 rounded-lg bg-slate-50 border border-slate-200 space-y-1.5">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-900">
+                  <span>{item.career}</span>
+                  <span className="text-blue-700">{item.count} std. ({item.pct}%)</span>
+                </div>
+                <div className="w-full bg-slate-200 rounded-full h-2">
+                  <div className={`${item.color} h-2 rounded-full`} style={{ width: `${item.pct * 2.5}%` }} />
+                </div>
+              </div>
+            ))}
           </div>
         </section>
       )}
